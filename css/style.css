@@ -11,11 +11,12 @@ body {
 #dowebok {
     position: absolute;
     top: 50%;
-    right: 0;
-    left: 0;
+    left: 50%;
     width: 430px;
+    max-width: calc(100% - 2rem);
     height: 100px;
     margin: -4px auto;
+    transform: translate(-50%, -50%);
 }
 
 #bg-artwork {
@@ -353,4 +354,53 @@ body {
     text-align: center;
     text-decoration: none;
     z-index: 125;
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        padding: 2rem 1rem;
+    }
+
+    #dowebok {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 0 auto;
+    }
+
+    #player {
+        height: auto;
+    }
+
+    #player-content {
+        height: auto;
+    }
+
+    #player-track {
+        padding: 140px 1.5rem 1rem;
+    }
+
+    #album-art {
+        position: relative;
+        margin: -90px auto 0;
+        left: auto;
+    }
+
+    #player-controls {
+        width: 100%;
+        margin: 0;
+        float: none;
+        display: flex;
+        justify-content: space-around;
+        gap: 0.5rem;
+    }
+
+    .control {
+        width: auto;
+        float: none;
+        flex: 1 1 0;
+        display: flex;
+        justify-content: center;
+    }
 }
