@@ -24,6 +24,26 @@
 
 body { background: #0f0f0f; }
 
+:root {
+   scroll-behavior: smooth;
+}
+
+header[id],
+section[id] {
+   scroll-margin-top: 80px;
+}
+
+a h3 {
+   text-decoration: underline;
+   font-weight: bold;
+   transition: color .2s ease;
+}
+
+a h3:hover {
+   color: #11ABB0;
+   text-decoration: none;
+}
+
 /* ------------------------------------------------------------------ */
 /* b. Header Styles
 /* ------------------------------------------------------------------ */
@@ -35,10 +55,21 @@ header {
    width: 100%;
    background: #161415 url(../images/header-background.jpg) no-repeat top center;
    background-size: cover !important;
-	-webkit-background-size: cover !important;
+        -webkit-background-size: cover !important;
    text-align: center;
    overflow: hidden;
 }
+
+/* header::after {
+   content: "";
+   position: absolute;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(22, 20, 21, 0.75) 60%, rgba(15, 15, 15, 0.9) 100%);
+   pointer-events: none;
+} */
 
 /* vertically center banner section */
 header:before {
@@ -52,8 +83,15 @@ header .banner {
    vertical-align: middle;
    margin: 0 auto;
    width: 85%;
-   padding-bottom: 30px;s
+   padding-bottom: 30px;
    text-align: center;
+}
+
+header .banner,
+header .banner-text,
+header .scrolldown {
+   position: relative;
+   z-index: 1;
 }
 
 header .banner-text { width: 100%; }
