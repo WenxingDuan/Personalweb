@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wenxing Duan PGP Signature Verifier</title>
+  <style>
+    :root{--bg:#0b1020;--card:#121830;--muted:#9aa3b2;--fg:#e7ecf3;--ok:#22c55e;--bad:#ef4444;--accent:#60a5fa;--border:#1f2a44}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:var(--bg);color:var(--fg)}
+    .container{max-width:900px;margin:24px auto;padding:0 16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    h1{font-size:22px;margin:0 0 10px;text-align:center}
+    .section{padding:18px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1 1 380px}
+    textarea,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    textarea{width:100%;min-height:200px;background:#0e1530;color:var(--fg);border:1px solid var(--border);border-radius:12px;padding:12px;resize:none;overflow:auto;white-space:pre-wrap;word-wrap:break-word}
+    .btn{appearance:none;border:1px solid var(--border);background:var(--accent);color:#0b1020;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .status{padding:12px;border-radius:12px;margin-top:12px;border:1px dashed var(--border)}
+    .status.ok{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08)}
+    .status.bad{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
+    #sig::placeholder{white-space:pre;opacity:.6}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Verify Signature of Wenxing Duan</h1>
+    <div class="card">
+      <div class="section">
+        <div class="row">
+          <div class="col">
+            <textarea id="msg" class="mono" placeholder="Paste the original message here (exactly as signed)" spellcheck="false"></textarea>
+          </div>
+          <div class="col">
+            <textarea id="sig" class="mono" spellcheck="false" placeholder="-----BEGIN PGP SIGNATURE-----\n\n... (Base64 signature body) ...\n-----END PGP SIGNATURE-----"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:12px;justify-content:center">
+          <button id="verify" class="btn">Verify</button>
+        </div>
+        <div id="status" class="status muted">Awaiting verification...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as openpgp from 'https://cdn.jsdelivr.net/npm/openpgp@5.11.1/dist/openpgp.min.mjs';
+
+    const FIXED_PUBKEY = `-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEZcE2yhYJKwYBBAHaRw8BAQdADnHSYHbQpP/kdgAJ8Gl5Y4c4WawdX4C/4oDz
++rr6i/20JFdlbnhpbmcgRHVhbiA8Vy5EdWFuLTRAc21zLmVkLmFjLnVrPoh4BDAW
+CgAgFiEEJm61z0TM0PIscwzRdQCnN6jBEEYFAmh0j8ICHSAACgkQdQCnN6jBEEZ7
+1AEA+0lRvT8YwAJ4YKhQajc/uue56ihtwmt9jdI4/NO23lAA/1/obp3GxEAzhn7B
+5kJG04tHUC29a92aTNhomB3buG8NiJYEExYKAD4CGwMFCwkIBwICIgIGFQoJCAsC
+BBYCAwECHgcCF4AWIQQmbrXPRMzQ8ixzDNF1AKc3qMEQRgUCZcFHvAIZAQAKCRB1
+AKc3qMEQRpvaAQCemb216LGd36+qMTvwJXAITjFb/XzsLQYkjdDZhxkwZQD9EP6r
+Xz1nHwAPzl/dkpf2hnZLaZO9LI1cgWcnt2HBag6IkwQTFgoAOwIbAwULCQgHAgIi
+AgYVCgkICwIEFgIDAQIeBwIXgBYhBCZutc9EzNDyLHMM0XUApzeowRBGBQJlwTbl
+AAoJEHUApzeowRBGQgkA/0CVVFw1jAljOB3MCyRPGHcT6EzSIMnGBmAEn2hPh/QO
+AP4ttA7j8tTumQlasReZx81Q5tBWT7RmQGxkeBjV1cgKCrQgV2VueGluZyBEdWFu
+IDxzMTkxNTQyNUBlZC5hYy51az6IeAQwFgoAIBYhBCZutc9EzNDyLHMM0XUApzeo
+wRBGBQJodI/IAh0gAAoJEHUApzeowRBGHzoA+wZ0aCMOB7Ny/gtb3KzimS/Fm45h
+XCtNwkL2bsvcZ27/AP9wHHlj/UZlOU8wbPzgDcwfdKpO16xmUz8WVw6oEeHzBoiT
+BBMWCgA7FiEEJm61z0TM0PIscwzRdQCnN6jBEEYFAmXBR7kCGwMFCwkIBwICIgIG
+FQoJCAsCBBYCAwECHgcCF4AACgkQdQCnN6jBEEYJjQD/cLMGnhRFKTq9MNioUkJh
+hARhRxbt+S3g2qdNbfacdUABAM9V0Qip4lqV53NBdmPm403xX0u8cLVbA9nfwFS2
+T8IMtCdXZW54aW5nIER1YW4gPDB4LldlbnhpbmdEdWFuQGdtYWlsLmNvbT6IlgQT
+FgoAPgIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgBYhBCZutc9EzNDyLHMM
+0XUApzeowRBGBQJodJBCAhkBAAoJEHUApzeowRBGcZ4A/2/tSBcnPM7ha95+HJNe
+bhPHW3YoFK2MlQXCK1plT1fsAP9CI0NA/BifHOjlSp3W8cK/abGuvqeNecalkb1e
+s2KtAIiTBBMWCgA7FiEEJm61z0TM0PIscwzRdQCnN6jBEEYFAmYGS4oCGwMFCwkI
+BwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgkQdQCnN6jBEEYvBAEA6MlYv1gsy4Ld
+gqg7pDI7stcKYxkYYRVx4jfZak5Xqp8A/2HBmU2TruiufXEMiFqbBPNtV8ZU0Qav
+ZhFDceYWK6UKtCZXZW54aW5nIER1YW4gPHdlbnhpbmdkdWFuQG91dGxvb2suY29t
+PoiTBBMWCgA7FiEEJm61z0TM0PIscwzRdQCnN6jBEEYFAmYGS5cCGwMFCwkIBwIC
+IgIGFQoJCAsCBBYCAwECHgcCF4AACgkQdQCnN6jBEEaTaAD+Ka5Mp2q33YpMGSfe
+4AFIYPCB+8Zu9Fwr97L8np8qwO8A/1+JlOJGfLzSH9LnaJ8JH2DxY/n6mVwuRpTv
+xTwDF7QJtCdXZW54aW5nIER1YW4gPHdlbnhpbmcuZHVhbkBwaXBsYWJzLnh5ej6I
+kwQTFgoAOxYhBCZutc9EzNDyLHMM0XUApzeowRBGBQJodI/vAhsDBQsJCAcCAiIC
+BhUKCQgLAgQWAgMBAh4HAheAAAoJEHUApzeowRBGmCEA/jWphI1xJJLP7aKnRmpa
+tf13siyC6NZfFUCw3cgXJ8LUAQCje8buNPpCJXoXMP1NZYNjkVSeLdeaqNHw4nTs
+uhbIDLQsV2VueGluZyBEdWFuIDx3ZW54aW5nLmR1YW5AY29ubmVjdC5wb2x5dS5o
+az6IkwQTFgoAOxYhBCZutc9EzNDyLHMM0XUApzeowRBGBQJodJAJAhsDBQsJCAcC
+AiICBhUKCQgLAgQWAgMBAh4HAheAAAoJEHUApzeowRBGHZ4A/2ganhsFNyfgDJnR
+vIXmQsl04SB1aFU7WFDoKaAH8EcMAQCrjlASOguu+/hHj7lqSlbKTcFoNC5a1BTB
+hn4AXrIqArQpV2VueGluZyBEdWFuIDwyNTAxMzUxN3JAY29ubmVjdC5wb2x5dS5o
+az6IkwQTFgoAOxYhBCZutc9EzNDyLHMM0XUApzeowRBGBQJodJAhAhsDBQsJCAcC
+AiICBhUKCQgLAgQWAgMBAh4HAheAAAoJEHUApzeowRBGbNcBAJ5VTj7I4QxkeuDZ
+Kj2bu4Sra/+ykgiM6S5RtfJZPhNzAP0c+3RskOheeRuDBwo8hvv0mVE9ZGPFpnlw
+epqDX2beCLg4BGXBNsoSCisGAQQBl1UBBQEBB0ANkEecXU0ieysj/7apUk2067k/
+DGpMMySIxsP/AuAubAMBCAeIeAQYFgoAIAIbDBYhBCZutc9EzNDyLHMM0XUApzeo
+wRBGBQJlwTbmAAoJEHUApzeowRBGat8BAPp7kTuaZ79crI+51xhseOL8gqtg3D0M
+lO+KS1r2xOj/APoDuQ+lrLiEwaNPv8Gw3BrvwM6/xnYcD9cvLQQSt59OBg==
+=Cmyy
+-----END PGP PUBLIC KEY BLOCK-----`;
+
+    const status = document.getElementById('status');
+    const btn = document.getElementById('verify');
+    const taMsg = document.getElementById('msg');
+    const taSig = document.getElementById('sig');
+
+    let pubKeyObj = null;
+    (async()=>{
+      try{
+        pubKeyObj = await openpgp.readKey({ armoredKey: FIXED_PUBKEY });
+      }catch(e){
+        status.className = 'status bad';
+        status.textContent = '❌ Public key load failed: ' + (e?.message||e);
+      }
+    })();
+
+    function formatKeyID(id){
+      if(!id) return 'Unknown';
+      return id.replace(/(.{4})/g,'$1 ').trim();
+    }
+
+    btn.addEventListener('click', async()=>{
+      status.className = 'status';
+      status.textContent = 'Verifying...';
+      if(!pubKeyObj){
+        status.className = 'status bad';
+        status.textContent = '❌ Public key not ready';
+        return;
+      }
+      try{
+        const raw = taMsg.value;
+        const sigArmored = taSig.value.trim();
+        if(!raw){ throw new Error('Message is empty'); }
+        if(!sigArmored){ throw new Error('Signature is empty'); }
+        const message = await openpgp.createMessage({ binary: new TextEncoder().encode(raw) });
+        const signature = await openpgp.readSignature({ armoredSignature: sigArmored });
+        const result = await openpgp.verify({ message, signature, verificationKeys: pubKeyObj });
+        const sig = result.signatures?.[0];
+        if(!sig){ throw new Error('No signature found'); }
+        const verified = await sig.verified.catch(()=>false);
+        const keyid = formatKeyID(sig?.keyID?.toHex?.()?.toUpperCase?.());
+        if(verified){
+          status.className = 'status ok';
+          status.innerHTML = `✅ Verified<br>Key ID: <code>${keyid}</code>`;
+        } else {
+          status.className = 'status bad';
+          status.innerHTML = `❌ Verification failed<br>Key ID: <code>${keyid}</code>`;
+        }
+      }catch(e){
+        status.className = 'status bad';
+        status.textContent = '❌ Error: ' + (e?.message || e);
+      }
+    });
+  </script>
+</body>
+</html>
