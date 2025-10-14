@@ -1,28 +1,126 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="favicon.png">
   <title>Wenxing Duan PGP Signature Verifier</title>
   <style>
-    :root{--bg:#0b1020;--card:#121830;--muted:#9aa3b2;--fg:#e7ecf3;--ok:#22c55e;--bad:#ef4444;--accent:#60a5fa;--border:#1f2a44}
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:var(--bg);color:var(--fg)}
-    .container{max-width:900px;margin:24px auto;padding:0 16px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-    h1{font-size:22px;margin:0 0 10px;text-align:center}
-    .section{padding:18px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .col{flex:1 1 380px}
-    textarea,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-    textarea{width:100%;min-height:200px;background:#0e1530;color:var(--fg);border:1px solid var(--border);border-radius:12px;padding:12px;resize:none;overflow:auto;white-space:pre-wrap;word-wrap:break-word}
-    .btn{appearance:none;border:1px solid var(--border);background:var(--accent);color:#0b1020;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
-    .status{padding:12px;border-radius:12px;margin-top:12px;border:1px dashed var(--border)}
-    .status.ok{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08)}
-    .status.bad{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
-    #sig::placeholder{white-space:pre;opacity:.6}
+    :root {
+      --bg: #0b1020;
+      --card: #121830;
+      --muted: #9aa3b2;
+      --fg: #e7ecf3;
+      --ok: #22c55e;
+      --bad: #ef4444;
+      --accent: #60a5fa;
+      --border: #1f2a44
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--fg)
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 0 16px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .2)
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0 0 10px;
+      text-align: center
+    }
+
+    .section {
+      padding: 18px
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .col {
+      flex: 1 1 380px
+    }
+
+    textarea,
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      background: #0e1530;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      resize: none;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: #0b1020;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
+      border: 1px dashed var(--border)
+    }
+
+    .status.ok {
+      border-color: rgba(34, 197, 94, .5);
+      background: rgba(34, 197, 94, .08)
+    }
+
+    .status.bad {
+      border-color: rgba(239, 68, 68, .5);
+      background: rgba(239, 68, 68, .08)
+    }
+
+    #sig::placeholder {
+      white-space: pre;
+      opacity: .6
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Verify Signature of Wenxing Duan</h1>
@@ -30,10 +128,12 @@
       <div class="section">
         <div class="row">
           <div class="col">
-            <textarea id="msg" class="mono" placeholder="Paste the original message here (exactly as signed)" spellcheck="false"></textarea>
+            <textarea id="msg" class="mono" placeholder="Paste the original message here (exactly as signed)"
+              spellcheck="false"></textarea>
           </div>
           <div class="col">
-            <textarea id="sig" class="mono" spellcheck="false" placeholder="-----BEGIN PGP SIGNATURE-----\n\n... (Base64 signature body) ...\n-----END PGP SIGNATURE-----"></textarea>
+            <textarea id="sig" class="mono" spellcheck="false"
+              placeholder="-----BEGIN PGP SIGNATURE-----\n\n... (Base64 signature body) ...\n-----END PGP SIGNATURE-----"></textarea>
           </div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:12px;justify-content:center">
@@ -102,52 +202,53 @@ lO+KS1r2xOj/APoDuQ+lrLiEwaNPv8Gw3BrvwM6/xnYcD9cvLQQSt59OBg==
     const taSig = document.getElementById('sig');
 
     let pubKeyObj = null;
-    (async()=>{
-      try{
+    (async () => {
+      try {
         pubKeyObj = await openpgp.readKey({ armoredKey: FIXED_PUBKEY });
-      }catch(e){
+      } catch (e) {
         status.className = 'status bad';
-        status.textContent = '❌ Public key load failed: ' + (e?.message||e);
+        status.textContent = '❌ Public key load failed: ' + (e?.message || e);
       }
     })();
 
-    function formatKeyID(id){
-      if(!id) return 'Unknown';
-      return id.replace(/(.{4})/g,'$1 ').trim();
+    function formatKeyID(id) {
+      if (!id) return 'Unknown';
+      return id.replace(/(.{4})/g, '$1 ').trim();
     }
 
-    btn.addEventListener('click', async()=>{
+    btn.addEventListener('click', async () => {
       status.className = 'status';
       status.textContent = 'Verifying...';
-      if(!pubKeyObj){
+      if (!pubKeyObj) {
         status.className = 'status bad';
         status.textContent = '❌ Public key not ready';
         return;
       }
-      try{
+      try {
         const raw = taMsg.value;
         const sigArmored = taSig.value.trim();
-        if(!raw){ throw new Error('Message is empty'); }
-        if(!sigArmored){ throw new Error('Signature is empty'); }
+        if (!raw) { throw new Error('Message is empty'); }
+        if (!sigArmored) { throw new Error('Signature is empty'); }
         const message = await openpgp.createMessage({ binary: new TextEncoder().encode(raw) });
         const signature = await openpgp.readSignature({ armoredSignature: sigArmored });
         const result = await openpgp.verify({ message, signature, verificationKeys: pubKeyObj });
         const sig = result.signatures?.[0];
-        if(!sig){ throw new Error('No signature found'); }
-        const verified = await sig.verified.catch(()=>false);
+        if (!sig) { throw new Error('No signature found'); }
+        const verified = await sig.verified.catch(() => false);
         const keyid = formatKeyID(sig?.keyID?.toHex?.()?.toUpperCase?.());
-        if(verified){
+        if (verified) {
           status.className = 'status ok';
           status.innerHTML = `✅ Verified<br>Key ID: <code>${keyid}</code>`;
         } else {
           status.className = 'status bad';
           status.innerHTML = `❌ Verification failed<br>Key ID: <code>${keyid}</code>`;
         }
-      }catch(e){
+      } catch (e) {
         status.className = 'status bad';
         status.textContent = '❌ Error: ' + (e?.message || e);
       }
     });
   </script>
 </body>
+
 </html>
