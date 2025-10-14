@@ -131,10 +131,17 @@
               spellcheck="false"></textarea>
           </div>
           <div class="col">
-            <textarea id="sig" class="mono" spellcheck="false" placeholder="-----BEGIN PGP SIGNATURE-----
+            <textarea id="sig" class="mono" spellcheck="false"></textarea>
+            <script>
+              document.addEventListener("DOMContentLoaded", () => {
+                document.getElementById("sig").placeholder =
+                  `-----BEGIN PGP SIGNATURE-----
 
 ... (Base64 signature body) ...
------END PGP SIGNATURE-----"></textarea>
+-----END PGP SIGNATURE-----`;
+              });
+            </script>
+
           </div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:12px;justify-content:center">
