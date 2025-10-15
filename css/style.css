@@ -7,6 +7,34 @@ body {
     margin: 0;
     background-color: #ffeff5;
 }
+.social {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.social li a {
+  color: #ffffff;              /* 默认白色 */
+  font-size: 24px;             /* 图标大小 */
+  font-weight: 600;            /* 让 🎵 音符更协调 */
+  text-decoration: none;
+  transition: color 0.3s, transform 0.3s ease;
+}
+
+/* 悬停效果 */
+.social li a:hover {
+  transform: scale(1.2);
+}
+
+/* 各品牌悬停时的专属颜色 */
+.social li:nth-child(1) a:hover { color: #333333; }   /* GitHub 黑灰 */
+.social li:nth-child(2) a:hover { color: #1da1f2; }   /* X 蓝 */
+.social li:nth-child(3) a:hover { color: #0077b5; }   /* LinkedIn 蓝 */
+.social li:nth-child(4) a:hover { color: #ec4141; }   /* 网易云音乐红 */
+.social li:nth-child(5) a:hover { color: #171a21; }   /* Steam 深灰 */
 
 #dowebok {
     position: absolute;
