@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PGP Signer · Detached · Static</title>
+  <link rel="shortcut icon" href="favicon.png">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121830;
+      --muted: #9aa3b2;
+      --fg: #e7ecf3;
+      --ok: #22c55e;
+      --bad: #ef4444;
+      --accent: #60a5fa;
+      --border: #1f2a44
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--fg)
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 0 16px
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0 0 12px;
+      text-align: center
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .2)
+    }
+
+    .section {
+      padding: 18px
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px
+    }
+
+    @media (min-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    label {
+      display: block;
+      margin: 4px 0 6px;
+      color: var(--muted)
+    }
+
+    textarea,
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      background: #0e1530;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      resize: vertical;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow: auto
+    }
+
+    input[type="password"],
+    .input {
+      width: 100%;
+      background: #0e1530;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: #0b1020;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--fg)
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      margin-top: 10px
+    }
+
+    .status.ok {
+      border-color: rgba(34, 197, 94, .5);
+      background: rgba(34, 197, 94, .08)
+    }
+
+    .status.bad {
+      border-color: rgba(239, 68, 68, .5);
+      background: rgba(239, 68, 68, .08)
+    }
+
+    #priv::placeholder,
+    #msg::placeholder {
+      white-space: pre;
+      opacity: .6
+    }
+
+    #sigOut {
+      min-height: 140px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>PGP Signer (Detached)</h1>
+    <div class="card">
+      <div class="section">
+        <div class="grid grid-2">
+          <div>
+            <label for="msg">Message</label>
+            <textarea id="msg" class="mono" spellcheck="false" wrap="soft"></textarea>
+          </div>
+          <div>
+            <label for="priv">PGP Private Key</label>
+            <textarea id="priv" class="mono" spellcheck="false" wrap="soft"></textarea>
+            <label for="pass" style="margin-top:8px">Passphrase</label>
+            <input id="pass" type="password" class="input" placeholder="Enter passphrase (if any)" />
+          </div>
+        </div>
+        <div class="row" style="justify-content:center;margin-top:12px">
+          <button id="btnSign" class="btn">Sign</button>
+          <button id="btnClear" class="btn ghost">Clear</button>
+          <button id="btnCopy" class="btn ghost">Copy Signature</button>
+        </div>
+        <label for="sigOut" style="display:block;margin-top:12px;color:var(--muted)">Detached Signature</label>
+        <textarea id="sigOut" class="mono" spellcheck="false" wrap="soft" readonly></textarea>
+        <div id="status" class="status">Ready</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as openpgp from 'https://cdn.jsdelivr.net/npm/openpgp@5.11.1/dist/openpgp.min.mjs';
+
+    const el = id => document.getElementById(id);
+    const msg = el('msg');
+    const priv = el('priv');
+    const pass = el('pass');
+    const btnSign = el('btnSign');
+    const btnClear = el('btnClear');
+    const btnCopy = el('btnCopy');
+    const sigOut = el('sigOut');
+    const status = el('status');
+
+    // 使用 innerText 方式设置多行 placeholder，避免 GitHub 处理换行符。
+    window.addEventListener('DOMContentLoaded', () => {
+      msg.setAttribute('placeholder', 'Paste the message to sign');
+      const keyHint = [
+        '-----BEGIN PGP PRIVATE KEY BLOCK-----',
+        '',
+        '... your private key here ...',
+        '-----END PGP PRIVATE KEY BLOCK-----'
+      ].join('\n');
+      priv.setAttribute('placeholder', keyHint);
+    });
+
+    async function signDetached() {
+      try {
+        status.className = 'status';
+        status.textContent = 'Signing…';
+        sigOut.value = '';
+        const messageText = msg.value;
+        const privArmored = priv.value.trim();
+        if (!messageText) throw new Error('Message is empty');
+        if (!privArmored) throw new Error('Private key is empty');
+
+        const privateKey = await openpgp.readPrivateKey({ armoredKey: privArmored });
+        const decryptedKey = await openpgp.decryptKey({ privateKey, passphrase: pass.value });
+        const message = await openpgp.createMessage({ binary: new TextEncoder().encode(messageText) });
+        const signed = await openpgp.sign({ message, signingKeys: decryptedKey, detached: true, format: 'armored' });
+        sigOut.value = signed;
+        status.className = 'status ok';
+        status.textContent = 'Done';
+      } catch (e) {
+        status.className = 'status bad';
+        status.textContent = 'Error: ' + (e?.message || e);
+      }
+    }
+
+    btnSign.addEventListener('click', signDetached);
+    btnClear.addEventListener('click', () => { msg.value = ''; priv.value = ''; pass.value = ''; sigOut.value = ''; status.className = 'status'; status.textContent = 'Cleared'; });
+    btnCopy.addEventListener('click', async () => {
+      if (!sigOut.value) return;
+      try { await navigator.clipboard.writeText(sigOut.value); btnCopy.textContent = 'Copied'; setTimeout(() => btnCopy.textContent = 'Copy Signature', 900); } catch { }
+    });
+  </script>
+</body>
+
+</html>
