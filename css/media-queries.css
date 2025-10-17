@@ -360,16 +360,12 @@
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
   /* Emulate parallax via sticky background inside the section */
-  #testimonials {
-    background: none !important; /* hide fixed BG which iOS doesn't support well */
-  }
+  #testimonials { background: none !important; }
   #testimonials .parallax-bg {
     display: block;
-    position: sticky;
-    top: 0;
-    height: 100vh;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: url(../images/testimonials.jpg) center/cover no-repeat;
-    transform: translateZ(0);
     will-change: transform;
     z-index: 0;
     pointer-events: none;
