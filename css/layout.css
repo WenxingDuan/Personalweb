@@ -707,6 +707,15 @@ call-to-action .button {
    width: 100%;
    overflow: hidden;
 }
+
+/* iOS Safari specific fix: background-attachment: fixed has rendering glitches.
+   Limit the change to iPhone/iPad only by targeting a WebKit+iOS-only feature. */
+@supports (-webkit-overflow-scrolling: touch) {
+  #testimonials {
+    background-attachment: scroll; /* fallback on iOS to avoid artifacts */
+    background-position: center center;
+  }
+}
 #testimonials .text-container {
    padding-top: 96px;
    padding-bottom: 66px;
