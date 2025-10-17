@@ -248,9 +248,14 @@ ul#nav li.current a { color: #F06000; }
    width: 120px;
    height: 120px;
    border-radius: 100%;
+   object-fit: cover;
 }
 #about .contact-details { width: 41.66667%; }
 #about .download {
+   width: 58.33333%;
+   padding-top: 6px;
+}
+#about .pgp-tools {
    width: 58.33333%;
    padding-top: 6px;
 }
@@ -259,6 +264,25 @@ ul#nav li.current a { color: #F06000; }
    margin-top: 6px;
    background: #444;
 }
+
+/* PGP tools layout */
+.pgp-tools { display: block; }
+.pgp-tools h2 { margin: 0 0 8px; }
+.pgp-tools-list {
+   list-style: none;
+   margin: 0;
+   padding: 0;
+}
+.pgp-tools-list li { margin: 0; }
+.pgp-tools-list a {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   line-height: 30px; /* match body line-height */
+   min-height: 30px;
+   text-decoration: underline;
+}
+.pgp-tools-list i { width: 1.25em; text-align: center; line-height: 30px; }
 #about .download .button:hover {
    background: #fff;
    color: #2B2B2B;

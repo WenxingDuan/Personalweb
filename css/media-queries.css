@@ -56,6 +56,19 @@
    }
    #about .contact-details { width: 50%; }
    #about .download { width: 50%; }
+   /* Stack PGP row on medium screens */
+   #about .pgp-contact, #about .pgp-tools { width: 100%; }
+   #about .pgp-tools { width: 100%; }
+
+   /* PGP tools list: better mobile tap targets and alignment */
+   .pgp-tools-list { margin-top: 6px; }
+   .pgp-tools-list li { margin: 0; }
+   .pgp-tools-list a {
+      padding: 0; /* keep spacing equal to 30px line-height */
+      text-underline-offset: 3px;
+      -webkit-tap-highlight-color: rgba(255,255,255,.1);
+      touch-action: manipulation;
+   }
 
    /* Resume Section
    ------------------------------------------------------------------- */
@@ -187,6 +200,7 @@
 
    /* Header Styles
    -------------------------------------------------------------------- */
+   header { background-position: center center; }
    header .banner {
       padding-bottom: 12px;
       padding-top: 6px;
@@ -216,12 +230,14 @@
    /* About Section
    -------------------------------------------------------------------- */
    #about .profile-pic { display: none; }
+   .pgp-tools { display:block; }
    #about .download .button {
       width: 100%;
       text-align: center;
       padding: 15px 20px;
    }
    #about .main-col { padding-right: 30px; }
+   #about .pgp-contact, #about .pgp-tools { width: 100%; }
 
 
    /* Resume Section
@@ -269,6 +285,9 @@
    }
    #testimonials h1 span { display: block; }
    #testimonials .header-col h1:before { content: none; }
+   /* Add one-line spacing between the two stacked columns */
+    #testimonials .header-col { margin-bottom: 30px; }
+    #testimonials .flex-container { margin-top: 0; }
    #testimonials blockquote { padding-bottom: 24px; }
    #testimonials blockquote p {
       font-size: 20px;

@@ -7,6 +7,10 @@
     ================================================== -->
     <meta charset="utf-8">
     <meta name="baidu-site-verification" content="codeva-Ht1rAQEVMn" />
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <!-- Font Awesome (brands used on page) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         referrerpolicy="no-referrer" />
     <title>Wenxing Duan</title>
@@ -20,14 +24,28 @@
 
     <!-- CSS
     ================================================== -->
+    <!-- Load local fonts and icon font in parallel (replaces CSS @import) -->
+    <link rel="preload" as="style" href="css/fonts.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="css/fonts.css">
+    </noscript>
+    <link rel="preload" as="style" href="css/fontello/css/fontello.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="css/fontello/css/fontello.css">
+    </noscript>
+
     <link rel="stylesheet" href="css/default.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/media-queries.css">
-    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- Defer non-critical popup styles -->
+    <link rel="preload" as="style" href="css/magnific-popup.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="css/magnific-popup.css">
+    </noscript>
 
     <!-- Script
     ================================================== -->
-    <script src="js/modernizr.js"></script>
+    <script src="js/modernizr.js" defer></script>
 
     <!-- Favicons
      ================================================== -->
@@ -141,7 +159,7 @@
 
                 <div class="row">
 
-                    <div class="columns contact-details">
+                    <div class="columns contact-details pgp-contact">
 
                         <h2>Contact Details</h2>
                         <p class="address">
@@ -169,20 +187,33 @@
 
                         <h2>PGP</h2>
                         <a
-                            href="https://keys.openpgp.org/vks/v1/by-fingerprint/266EB5CF44CCD0F22C730CD17500A737A8C11046">266E
-                            B5CF 44CC D0F2 2C73<br> 0CD1 7500 A737 A8C1 1046</a>
-
+                            href="https://keys.openpgp.org/vks/v1/by-fingerprint/266EB5CF44CCD0F22C730CD17500A737A8C11046">
+                            266E B5CF 44CC D0F2 2C73<br> 0CD1 7500 A737 A8C1 1046
+                        </a>
+                        <br>
+                        <br>
                     </div>
 
-                    <h2>PGP Tools</h2>
-                    <a href="PGPSigner.html">
-                        PGP Signer
-                    </a>
-                    <br>
-                    <a href="PGPVerifier.html">
-                        Verify My Signature
-                    </a>
-                    </a>
+
+                    <div class="columns pgp-tools">
+                        <h2>PGP Tools</h2>
+                        <ul class="pgp-tools-list">
+                            <li>
+                                <a href="PGPSigner.html">
+                                    <i class="fa-solid fa-pen"></i>
+                                    PGP Signer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="PGPVerifier.html">
+                                    <i class="fa-solid fa-check"></i>
+                                    Verify My Signature
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+
                 </div> <!-- end row -->
             </div> <!-- end .main-col -->
 
@@ -645,6 +676,7 @@
 
                             <a href="#modal-01" title="">
                                 <img src="images/portfolio/psc (1).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 1" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -664,6 +696,7 @@
 
                             <a href="#modal-02" title="">
                                 <img src="images/portfolio/psc (2).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 2" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -682,6 +715,7 @@
 
                             <a href="#modal-03" title="">
                                 <img src="images/portfolio/psc (3).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 3" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -700,6 +734,7 @@
 
                             <a href="#modal-04" title="">
                                 <img src="images/portfolio/psc (4).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 4" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -718,6 +753,7 @@
 
                             <a href="#modal-05" title="">
                                 <img src="images/portfolio/psc (5).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 5" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -736,6 +772,7 @@
 
                             <a href="#modal-06" title="">
                                 <img src="images/portfolio/psc (6).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 6" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -754,6 +791,7 @@
 
                             <a href="#modal-07" title="">
                                 <img src="images/portfolio/psc (7).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 7" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -772,6 +810,7 @@
 
                             <a href="#modal-08" title="">
                                 <img src="images/portfolio/psc (8).jpg"
+                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
                                     alt="Photography from Wenxing Duan portfolio set 8" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
@@ -792,7 +831,7 @@
 
             <div id="modal-01" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (1).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (1).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 1" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -808,7 +847,7 @@
 
             <div id="modal-02" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (2).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (2).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 2" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -825,7 +864,7 @@
 
             <div id="modal-03" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (3).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (3).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 3" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -842,7 +881,7 @@
 
             <div id="modal-04" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (4).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (4).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 4" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -858,7 +897,7 @@
 
             <div id="modal-05" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (5).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (5).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 5" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -875,7 +914,7 @@
 
             <div id="modal-06" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (6).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (6).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 6" loading="lazy" decoding="async" />
 
                 <div class="description-box">
@@ -892,7 +931,7 @@
 
             <div id="modal-07" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (7).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (7).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 7" loading="lazy" decoding="async" />
                 <div class="description-box">
                     <h4>Mountain</h4>
@@ -908,7 +947,7 @@
 
             <div id="modal-08" class="popup-modal mfp-hide">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (8).jpg"
+                <img class="scale-with-grid" src="images/portfolio/modals/psc (8).jpg" sizes="100vw"
                     alt="Full-size view of portfolio image 8" loading="lazy" decoding="async" />
 
                 <div class="description-box">
