@@ -700,7 +700,7 @@ call-to-action .button {
    background: #1F1F1F url(../images/testimonials.jpg) no-repeat center center;
    background-size: cover !important;
 	-webkit-background-size: cover !important;
-   background-attachment: scroll; /* unified normal scrolling background */
+   background-attachment: fixed; /* keep image fixed; text scrolls over */
 
    position: relative;
    min-height: 200px;
