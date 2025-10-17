@@ -357,6 +357,21 @@
 
 }
 
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Testimonials background: align like Chrome mobile emulation */
+  #testimonials {
+    background-attachment: scroll !important;
+    background-position: center 20% !important;
+    background-size: cover !important;
+  }
+  /* Normalize link text metrics for PGP Tools */
+  .pgp-tools-list a {
+    font-size: 15px; /* match body */
+    line-height: 30px; /* ensure equals to desktop */
+  }
+}
+
 /* mobile narrow
   -------------------------------------------------------------------------- */
 
