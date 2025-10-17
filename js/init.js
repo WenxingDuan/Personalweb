@@ -133,30 +133,7 @@
       randomize: false,
    });
 
-/*----------------------------------------------------*/
-/*  iOS parallax emulation for #testimonials background
-/*----------------------------------------------------*/
-   (function(){
-      var isIOS = /iP(ad|hone|od)/.test(navigator.platform) || (navigator.userAgent.indexOf('Mac') > -1 && 'ontouchend' in document);
-      if (!isIOS) return;
-      var sec = document.getElementById('testimonials');
-      if (!sec) return;
-      var bg = sec.querySelector('.parallax-bg');
-      var text = sec.querySelector('.text-container');
-      if (!bg || !text) return;
-      function update(){
-         var rect = sec.getBoundingClientRect();
-         // translate opposite to section scroll to mimic fixed background
-         bg.style.transform = 'translateY(' + (-rect.top) + 'px)';
-      }
-      // ensure correct stacking
-      text.style.position = 'relative';
-      text.style.zIndex = 1;
-      bg.style.zIndex = 0;
-      update();
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-   })();
+/* (rollback) removed iOS parallax emulation to avoid jank */
 
 /*----------------------------------------------------*/
 /*	contact form
