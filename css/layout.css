@@ -707,6 +707,7 @@ call-to-action .button {
    width: 100%;
    overflow: hidden;
 }
+#testimonials .parallax-bg { display: none; }
 #testimonials .text-container {
    padding-top: 96px;
    padding-bottom: 66px;

@@ -359,12 +359,23 @@
 
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
-  /* Testimonials background: align like Chrome mobile emulation */
+  /* Emulate parallax via sticky background inside the section */
   #testimonials {
-    background-attachment: scroll !important;
-    background-position: center 20% !important;
-    background-size: cover !important;
+    background: none !important; /* hide fixed BG which iOS doesn't support well */
   }
+  #testimonials .parallax-bg {
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background: url(../images/testimonials.jpg) center/cover no-repeat;
+    transform: translateZ(0);
+    will-change: transform;
+    z-index: 0;
+    pointer-events: none;
+  }
+  #testimonials .text-container { position: relative; z-index: 1; }
+
   /* Normalize link text metrics for PGP Tools */
   .pgp-tools-list a {
     font-size: 15px; /* match body */
