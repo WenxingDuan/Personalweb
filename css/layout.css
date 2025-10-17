@@ -700,14 +700,13 @@ call-to-action .button {
    background: #1F1F1F url(../images/testimonials.jpg) no-repeat center center;
    background-size: cover !important;
 	-webkit-background-size: cover !important;
-   background-attachment: fixed;
+   background-attachment: scroll; /* unified normal scrolling background */
 
    position: relative;
    min-height: 200px;
    width: 100%;
    overflow: hidden;
 }
-#testimonials .parallax-bg { display: none; }
 #testimonials .text-container {
    padding-top: 96px;
    padding-bottom: 66px;
