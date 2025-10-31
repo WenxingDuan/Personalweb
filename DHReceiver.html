@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Receiver · ECDH Key Exchange Demo</title>
+    <link rel="icon" href="favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-role="receiver">
+    <div class="wrap">
+      <div id="compat-warning" class="card" style="display:none">
+        <strong class="warn">Note:</strong> This environment seems to lack WebCrypto SubtleCrypto. Please use a modern browser and open this page via a local HTTP server (e.g., `python -m http.server` or `npx http-server`).
+      </div>
+
+      <div class="card">
+        <h1>DH Key Exchange (<span data-id="roleTitle">Receiver</span>)</h1>
+        <div class="muted">Algorithms: ECDH over NIST P‑256 (secp256r1) to derive a 256‑bit AES‑GCM key (no HKDF). IV = 96‑bit random. Ciphertext JSON { v, alg, iv, ct } with base64 fields. Key fingerprint = SHA‑256 of raw AES key. </div>
+      </div>
+
+      <div class="card grid">
+        <h2>Step 1: Generate My Key Pair</h2>
+        <div class="btns">
+          <button data-id="genBtn">Generate My Key Pair</button>
+          <button data-id="copyMyPub" class="secondary" disabled>Copy My Public Key</button>
+        </div>
+        <label>My Public Key (send to peer):</label>
+        <textarea data-id="myPub" class="mono" readonly></textarea>
+      </div>
+
+        <div class="card grid">
+        <h2>Step 2: Paste Peer Public Key and Establish Session Key</h2>
+        <label>Peer Public Key (JWK JSON):</label>
+        <textarea data-id="peerPub" class="mono" placeholder='Paste peer public key, e.g. {"kty":"EC","crv":"P-256","x":"…","y":"…"}'></textarea>
+        <div class="btns">
+          <button data-id="buildSessionBtn" class="success" disabled>Establish Session Key</button>
+        </div>
+        <label>Session Key Fingerprint (SHA‑256): <span class="pill">Verify both sides match</span></label>
+        <input data-id="fingerprint" class="mono" type="text" readonly />
+      </div>
+
+      <div class="card grid">
+        <h2>Step 3: Encrypt / Decrypt</h2>
+        <div class="row">
+          <div class="col">
+            <label>Plaintext:</label>
+            <textarea data-id="plain" placeholder="Enter text to encrypt"></textarea>
+            <div class="btns">
+              <button data-id="encryptBtn" disabled>Encrypt →</button>
+            </div>
+          </div>
+          <div class="col">
+            <label>Ciphertext (JSON, share with peer):</label>
+            <textarea data-id="cipher" class="mono" placeholder='{"v":1,"alg":"ECDH-P256/AES-GCM-256","iv":"…","ct":"…"}'></textarea>
+            <div class="btns">
+              <button data-id="decryptBtn" class="secondary" disabled>← Decrypt</button>
+            </div>
+          </div>
+        </div>
+        <div class="footer" data-id="status"></div>
+      </div>
+
+    </div>
+
+    <script src="js/dh.js"></script>
+  </body>
+</html>
