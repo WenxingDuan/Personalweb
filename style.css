@@ -13,7 +13,7 @@ input[type="text"],input[type="password"],input[readonly]{width:100%;background:
 .row{display:flex;gap:12px;flex-wrap:wrap}
 .row>.col{flex:1 1 280px}
 .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-button{background:var(--primary);color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
+button{background:var(--primary);color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;min-height:44px}
 button.secondary{background:#334155}
 button.success{background:var(--accent)}
 button.danger{background:var(--danger)}
@@ -26,3 +26,17 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .ok{color:var(--accent)}
 .warn{color:#f59e0b}
 .err{color:var(--danger)}
+
+/* Improve readability and wrapping for long JSON on mobile */
+textarea{white-space:pre-wrap;word-break:break-word}
+input,textarea{font-size:16px}
+
+@media (max-width: 640px){
+  .wrap{padding:0 12px}
+  h1{font-size:18px}
+  h2{font-size:15px}
+  .card{padding:14px 12px}
+  .btns{flex-direction:column}
+  .btns button{width:100%}
+  .row{flex-direction:column}
+}
