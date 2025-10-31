@@ -14,8 +14,8 @@
       </div>
 
       <div class="card">
-        <h1>DH Key Exchange (<span data-id="roleTitle">Sender</span>)</h1>
-        <div class="muted">Algorithms: ECDH over NIST P‑256 (secp256r1) to derive a 256‑bit AES‑GCM key (no HKDF). IV = 96‑bit random. Ciphertext JSON { v, alg, iv, ct } with base64 fields. Key fingerprint = SHA‑256 of raw AES key. </div>
+        <h1>Diffie-Hellman key exchange (<span data-id="roleTitle">Sender</span>)</h1>
+        <div class="muted">Algorithms: ECDH over NIST P-256 (secp256r1) to derive a 256-bit AES-GCM key (no HKDF). IV = 96-bit random. Ciphertext JSON { v, alg, iv, ct } with base64 fields. Key fingerprint = SHA-256 of raw AES key. </div>
       </div>
 
       <div class="card grid">
@@ -35,7 +35,7 @@
         <div class="btns">
           <button data-id="buildSessionBtn" class="success" disabled>Establish Session Key</button>
         </div>
-        <label>Session Key Fingerprint (SHA‑256): <span class="pill">Verify both sides match</span></label>
+        <label>Session Key Fingerprint (SHA-256): <span class="pill">Verify both sides match</span></label>
         <input data-id="fingerprint" class="mono" type="text" readonly />
       </div>
 
