@@ -124,8 +124,10 @@ function setupPage() {
     els.buildSessionBtn.disabled = !enabled;
   }
 
-  // Input sanitization (strip control chars)
-  const sanitize = (s) => (s ?? '').toString().replace(/[\u0000-\u001F\u007F]/g, '');
+  // Input sanitization (strip most control chars, but KEEP tabs/newlines)
+  // Removes: U+0000–0008, 000B–000C, 000E–001F, 007F
+  // Keeps: \t (U+0009), \n (U+000A), \r (U+000D)
+  const sanitize = (s) => (s ?? '').toString().replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F\u007F]/g, '');
   document.querySelectorAll('[data-sanitize]').forEach((el) => {
     el.addEventListener('input', () => { el.value = sanitize(el.value); });
     el.addEventListener('paste', () => { setTimeout(()=>{ el.value = sanitize(el.value); }, 0); });
