@@ -47,10 +47,29 @@ def normalize_name(name: str) -> str:
     return "".join(ch for ch in normalized if ch.isalnum())
 
 
-def build_library(music_dir: Path) -> Dict:
+def build_library(music_dir: Path, existing: Optional[Dict] = None) -> Dict:
     root_dir = music_dir.parent
+
     albums: Dict[str, Dict] = {}
     album_covers: Dict[str, Dict[str, bytes]] = {}
+    track_src_index: Dict[str, set] = {}
+
+    # Seed with existing data (if any)
+    if existing and "albums" in existing:
+        for album in existing["albums"]:
+            name = album.get("album")
+            if not name:
+                continue
+            # Shallow copy to avoid mutating original
+            entry = {
+                "album": album.get("album"),
+                "albumArtist": album.get("albumArtist"),
+                "year": album.get("year"),
+                "cover": album.get("cover"),
+                "tracks": list(album.get("tracks", [])),
+            }
+            albums[name] = entry
+            track_src_index[name] = {t.get("src") for t in entry["tracks"] if t.get("src")}
 
     for path in sorted(music_dir.glob("*.flac")):
         audio = FLAC(path)
@@ -76,16 +95,22 @@ def build_library(music_dir: Path) -> Dict:
 
         rel_src = path.relative_to(root_dir).as_posix()
 
-        album_entry = albums.setdefault(
-            album,
-            {
+        album_entry = albums.get(album)
+        if not album_entry:
+            album_entry = {
                 "album": album,
                 "albumArtist": album_artist,
                 "year": year,
                 "cover": None,
                 "tracks": [],
-            },
-        )
+            }
+            albums[album] = album_entry
+            track_src_index[album] = set()
+
+        # Deduplicate by src
+        if rel_src in track_src_index[album]:
+            continue
+        track_src_index[album].add(rel_src)
 
         if album not in album_covers and cover_data:
             album_covers[album] = {"mime": cover_mime, "data": cover_data}
@@ -178,7 +203,15 @@ def main() -> None:
     if not music_dir.exists():
         raise SystemExit(f"Music directory not found at {music_dir}")
 
-    library = build_library(music_dir)
+    existing_path = Path(__file__).parent / "music-library.json"
+    existing_data = None
+    if existing_path.exists():
+        try:
+            existing_data = json.loads(existing_path.read_text(encoding="utf-8"))
+        except Exception:
+            existing_data = None
+
+    library = build_library(music_dir, existing=existing_data)
     output_path = Path(__file__).parent / "music-library.json"
     output_path.write_text(json.dumps(library, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Wrote {output_path} with {library['albumCount']} albums and {library['trackCount']} tracks.")
