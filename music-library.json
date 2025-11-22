@@ -1,0 +1,605 @@
+{
+  "generatedAt": "2025-11-22T23:46:31",
+  "musicDir": "C:\\Users\\Duan\\Desktop\\pytest\\PersonalWeb\\Music",
+  "albumCount": 9,
+  "trackCount": 75,
+  "albums": [
+    {
+      "album": "Everywhere at the end of time - Stage 1",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_at_the_end_of_time_Stage_1.jpg",
+      "tracks": [
+        {
+          "title": "It's just a burning memory",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 212.21,
+          "src": "Music/The Caretaker - It's just a burning memory.flac"
+        },
+        {
+          "title": "We don't have many days",
+          "artist": "The Caretaker",
+          "track": 2,
+          "duration": 210.21,
+          "src": "Music/The Caretaker - We don't have many days.flac"
+        },
+        {
+          "title": "Late afternoon drifting",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 215.8,
+          "src": "Music/The Caretaker - Late afternoon drifting.flac"
+        },
+        {
+          "title": "Childishly fresh eyes",
+          "artist": "The Caretaker",
+          "track": 4,
+          "duration": 178.27,
+          "src": "Music/The Caretaker - Childishly fresh eyes.flac"
+        },
+        {
+          "title": "Slightly bewildered",
+          "artist": "The Caretaker",
+          "track": 5,
+          "duration": 121.62,
+          "src": "Music/The Caretaker - Slightly bewildered.flac"
+        },
+        {
+          "title": "Things that are beautiful and transient",
+          "artist": "The Caretaker",
+          "track": 6,
+          "duration": 274.27,
+          "src": "Music/The Caretaker - Things that are beautiful and transient.flac"
+        },
+        {
+          "title": "All that follows is true",
+          "artist": "The Caretaker",
+          "track": 7,
+          "duration": 211.99,
+          "src": "Music/The Caretaker - All that follows is true.flac"
+        },
+        {
+          "title": "An autumnal equinox",
+          "artist": "The Caretaker",
+          "track": 8,
+          "duration": 166.99,
+          "src": "Music/The Caretaker - An autumnal equinox.flac"
+        },
+        {
+          "title": "Quiet internal rebellions",
+          "artist": "The Caretaker",
+          "track": 9,
+          "duration": 210.79,
+          "src": "Music/The Caretaker - Quiet internal rebellions.flac"
+        },
+        {
+          "title": "The loves of my entire life",
+          "artist": "The Caretaker",
+          "track": 10,
+          "duration": 244.37,
+          "src": "Music/The Caretaker - The loves of my entire life.flac"
+        },
+        {
+          "title": "Into each others eyes",
+          "artist": "The Caretaker",
+          "track": 11,
+          "duration": 276.02,
+          "src": "Music/The Caretaker - Into each others eyes.flac"
+        },
+        {
+          "title": "My heart will stop in joy",
+          "artist": "The Caretaker",
+          "track": 12,
+          "duration": 161.29,
+          "src": "Music/The Caretaker - My heart will stop in joy.flac"
+        }
+      ]
+    },
+    {
+      "album": "Everywhere At The End Of Time - Stage 2",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_At_The_End_Of_Time_Stage_2.jpg",
+      "tracks": [
+        {
+          "title": "A Losing Battle Is Raging",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 277.93,
+          "src": "Music/The Caretaker - A Losing Battle Is Raging.flac"
+        },
+        {
+          "title": "Misplaced In Time",
+          "artist": "The Caretaker",
+          "track": 2,
+          "duration": 282.7,
+          "src": "Music/The Caretaker - Misplaced In Time.flac"
+        },
+        {
+          "title": "What Does It Matter How My Heart Breaks",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 157.98,
+          "src": "Music/The Caretaker - What Does It Matter How My Heart Breaks.flac"
+        },
+        {
+          "title": "Glimpses Of Hope In Trying Times",
+          "artist": "The Caretaker",
+          "track": 4,
+          "duration": 283.14,
+          "src": "Music/The Caretaker - Glimpses Of Hope In Trying Times.flac"
+        },
+        {
+          "title": "Surrendering To Despair",
+          "artist": "The Caretaker",
+          "track": 5,
+          "duration": 303.68,
+          "src": "Music/The Caretaker - Surrendering To Despair.flac"
+        },
+        {
+          "title": "I Still Feel As Though I Am Me",
+          "artist": "The Caretaker",
+          "track": 6,
+          "duration": 247.78,
+          "src": "Music/The Caretaker - I Still Feel As Though I Am Me.flac"
+        },
+        {
+          "title": "Quiet Dusk Coming Early",
+          "artist": "The Caretaker",
+          "track": 7,
+          "duration": 216.99,
+          "src": "Music/The Caretaker - Quiet Dusk Coming Early.flac"
+        },
+        {
+          "title": "Last Moments Of Pure Recall",
+          "artist": "The Caretaker",
+          "track": 8,
+          "duration": 232.94,
+          "src": "Music/The Caretaker - Last Moments Of Pure Recall.flac"
+        },
+        {
+          "title": "Denial Unravelling",
+          "artist": "The Caretaker",
+          "track": 9,
+          "duration": 256.25,
+          "src": "Music/The Caretaker - Denial Unravelling.flac"
+        },
+        {
+          "title": "The Way Ahead Feels Lonely",
+          "artist": "The Caretaker",
+          "track": 10,
+          "duration": 255.14,
+          "src": "Music/The Caretaker - The Way Ahead Feels Lonely.flac"
+        }
+      ]
+    },
+    {
+      "album": "Everywhere At The End Of Time - Stage 3",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_At_The_End_Of_Time_Stage_3.jpg",
+      "tracks": [
+        {
+          "title": "Back There Benjamin",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 254.91,
+          "src": "Music/The Caretaker - Back There Benjamin.flac"
+        },
+        {
+          "title": "And Heart Breaks",
+          "artist": "The Caretaker",
+          "track": 2,
+          "duration": 245.09,
+          "src": "Music/The Caretaker - And Heart Breaks.flac"
+        },
+        {
+          "title": "Hidden Sea Buried Deep",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 80.27,
+          "src": "Music/The Caretaker - Hidden Sea Buried Deep.flac"
+        },
+        {
+          "title": "Libet's All Joyful Camaraderie",
+          "artist": "The Caretaker",
+          "track": 4,
+          "duration": 192.84,
+          "src": "Music/The Caretaker - Libet's All Joyful Camaraderie.flac"
+        },
+        {
+          "title": "To the Minimal Great Hidden",
+          "artist": "The Caretaker",
+          "track": 5,
+          "duration": 101.09,
+          "src": "Music/The Caretaker - To the Minimal Great Hidden.flac"
+        },
+        {
+          "title": "Sublime Beyond Loss",
+          "artist": "The Caretaker",
+          "track": 6,
+          "duration": 130.68,
+          "src": "Music/The Caretaker - Sublime Beyond Loss.flac"
+        },
+        {
+          "title": "Bewildered in Other Eyes",
+          "artist": "The Caretaker",
+          "track": 7,
+          "duration": 111.27,
+          "src": "Music/The Caretaker - Bewildered in Other Eyes.flac"
+        },
+        {
+          "title": "Long Term Dusk Glimpses",
+          "artist": "The Caretaker",
+          "track": 8,
+          "duration": 213.93,
+          "src": "Music/The Caretaker - Long Term Dusk Glimpses.flac"
+        },
+        {
+          "title": "Gradations of Arms Length",
+          "artist": "The Caretaker",
+          "track": 9,
+          "duration": 91.7,
+          "src": "Music/The Caretaker - Gradations of Arms Length.flac"
+        },
+        {
+          "title": "Drifiting Time Misplaced",
+          "artist": "The Caretaker",
+          "track": 10,
+          "duration": 255.81,
+          "src": "Music/The Caretaker - Drifiting Time Misplaced.flac"
+        },
+        {
+          "title": "Internal Bewildered World",
+          "artist": "The Caretaker",
+          "track": 11,
+          "duration": 209.29,
+          "src": "Music/The Caretaker - Internal Bewildered World.flac"
+        },
+        {
+          "title": "Burning Despair Does Ache",
+          "artist": "The Caretaker",
+          "track": 12,
+          "duration": 157.1,
+          "src": "Music/The Caretaker - Burning Despair Does Ache.flac"
+        },
+        {
+          "title": "Aching Cavern Without Lucidity",
+          "artist": "The Caretaker",
+          "track": 13,
+          "duration": 79.13,
+          "src": "Music/The Caretaker - Aching Cavern Without Lucidity.flac"
+        },
+        {
+          "title": "An Empty Bliss Beyond This World",
+          "artist": "The Caretaker",
+          "track": 14,
+          "duration": 216.25,
+          "src": "Music/The Caretaker - An Empty Bliss Beyond This World.flac"
+        },
+        {
+          "title": "Libet Delay",
+          "artist": "The Caretaker",
+          "track": 15,
+          "duration": 237.44,
+          "src": "Music/The Caretaker - Libet Delay.flac"
+        },
+        {
+          "title": "Mournful Cameraderie",
+          "artist": "The Caretaker",
+          "track": 16,
+          "duration": 159.11,
+          "src": "Music/The Caretaker - Mournful Cameraderie.flac"
+        }
+      ]
+    },
+    {
+      "album": "Everywhere at the end of time - Stage 4",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_at_the_end_of_time_Stage_4.jpg",
+      "tracks": [
+        {
+          "title": "G1 - Stage 4 Post Awareness Confusions",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 1329.0,
+          "src": "Music/The Caretaker - G1 - Stage 4 Post Awareness Confusions.flac"
+        },
+        {
+          "title": "H1 - Stage 4 Post Awareness Confusions",
+          "artist": "The Caretaker",
+          "track": 2,
+          "duration": 1313.0,
+          "src": "Music/The Caretaker - H1 - Stage 4 Post Awareness Confusions.flac"
+        },
+        {
+          "title": "I1 - Stage 4 Temporary Bliss State",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 1261.89,
+          "src": "Music/The Caretaker - I1 - Stage 4 Temporary Bliss State.flac"
+        },
+        {
+          "title": "J1 - Stage 4 Post Awareness Confusions",
+          "artist": "The Caretaker",
+          "track": 4,
+          "duration": 1336.27,
+          "src": "Music/The Caretaker - J1 - Stage 4 Post Awareness Confusions.flac"
+        }
+      ]
+    },
+    {
+      "album": "Everywhere at the end of time - Stage 5",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_at_the_end_of_time_Stage_5.jpg",
+      "tracks": [
+        {
+          "title": "Stage 5 Advanced plaque entanglements",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 1355.75,
+          "src": "Music/The Caretaker - Stage 5 Advanced plaque entanglements.flac"
+        },
+        {
+          "title": "Stage 5 Synapse retrogenesis",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 1248.0,
+          "src": "Music/The Caretaker - Stage 5 Synapse retrogenesis.flac"
+        }
+      ]
+    },
+    {
+      "album": "Everywhere at the end of time - Stage 6",
+      "albumArtist": "The Caretaker",
+      "year": null,
+      "cover": "Music/cover/Everywhere_at_the_end_of_time_Stage_6.jpg",
+      "tracks": [
+        {
+          "title": "O1 - Stage 6 A confusion so thick you forget forgetting",
+          "artist": "The Caretaker",
+          "track": 1,
+          "duration": 1312.12,
+          "src": "Music/The Caretaker - O1 - Stage 6 A confusion so thick you forget forgetting.flac"
+        },
+        {
+          "title": "Q1 - Stage 6 Long decline is over",
+          "artist": "The Caretaker",
+          "track": 3,
+          "duration": 1269.98,
+          "src": "Music/The Caretaker - Q1 - Stage 6 Long decline is over.flac"
+        },
+        {
+          "title": "R1 - Stage 6 Place in the World fades away",
+          "artist": "The Caretaker",
+          "track": 4,
+          "duration": 1279.47,
+          "src": "Music/The Caretaker - R1 - Stage 6 Place in the World fades away.flac"
+        }
+      ]
+    },
+    {
+      "album": "Gaïa",
+      "albumArtist": "Abel Selaocoe/Gautier Capuçon/Michael Fine",
+      "year": null,
+      "cover": "Music/cover/Gaïa.jpg",
+      "tracks": [
+        {
+          "title": "Sequence for Gaïa",
+          "artist": "Gautier Capuçon/Jerome Ducros/Michael Fine",
+          "track": 1,
+          "duration": 275.93,
+          "src": "Music/Gautier Capuçon,Jerome Ducros,Michael Fine - Sequence for Gaïa.flac"
+        },
+        {
+          "title": "Towards the Forest",
+          "artist": "Gautier Capuçon/Michael Fine",
+          "track": 2,
+          "duration": 239.65,
+          "src": "Music/Gautier Capuçon,Michael Fine - Towards the Forest.flac"
+        },
+        {
+          "title": "Wake",
+          "artist": "Capucelli/Gautier Capuçon/Michael Fine",
+          "track": 3,
+          "duration": 252.87,
+          "src": "Music/Capucelli,Gautier Capuçon,Michael Fine - Wake.flac"
+        },
+        {
+          "title": "Forever Home",
+          "artist": "Ayanna Witter-Johnson/Gautier Capuçon/Michael Fine",
+          "track": 4,
+          "duration": 243.57,
+          "src": "Music/Ayanna Witter-Johnson,Gautier Capuçon,Michael Fine - Forever Home.flac"
+        },
+        {
+          "title": "Air",
+          "artist": "Gautier Capuçon/Michael Fine",
+          "track": 5,
+          "duration": 249.35,
+          "src": "Music/Gautier Capuçon,Michael Fine - Air.flac"
+        },
+        {
+          "title": "Prélude",
+          "artist": "Gautier Capuçon/Jerome Ducros/Michael Fine",
+          "track": 6,
+          "duration": 339.31,
+          "src": "Music/Gautier Capuçon,Jerome Ducros,Michael Fine - Prélude.flac"
+        },
+        {
+          "title": "Boreas",
+          "artist": "Capucelli/Gautier Capuçon/Jerome Ducros/Michael Fine",
+          "track": 7,
+          "duration": 342.63,
+          "src": "Music/Capucelli,Gautier Capuçon,Jerome Ducros - Boreas.flac"
+        },
+        {
+          "title": "Towards the Light",
+          "artist": "Gautier Capuçon/Jerome Ducros/Michael Fine",
+          "track": 8,
+          "duration": 200.36,
+          "src": "Music/Gautier Capuçon,Jerome Ducros,Michael Fine - Towards the Light.flac"
+        },
+        {
+          "title": "Tàmâr Mĕtūshelāḥ",
+          "artist": "Gautier Capuçon/Michael Fine/Olivia Belli",
+          "track": 9,
+          "duration": 231.91,
+          "src": "Music/Gautier Capuçon,Michael Fine,Olivia Belli - Tàmâr Mĕtūshelāḥ.flac"
+        },
+        {
+          "title": "Ambition",
+          "artist": "Frank Braley/Gautier Capuçon/Michael Fine",
+          "track": 10,
+          "duration": 297.72,
+          "src": "Music/Frank Braley,Gautier Capuçon,Michael Fine - Ambition.flac"
+        },
+        {
+          "title": "Sur le lac du Bourget",
+          "artist": "Frank Braley/Gautier Capuçon/Michael Fine",
+          "track": 11,
+          "duration": 277.11,
+          "src": "Music/Frank Braley,Gautier Capuçon,Michael Fine - Sur le lac du Bourget.flac"
+        },
+        {
+          "title": "Life in Sunshine",
+          "artist": "Capucelli/Gautier Capuçon/Michael Fine",
+          "track": 12,
+          "duration": 222.49,
+          "src": "Music/Capucelli,Gautier Capuçon,Michael Fine - Life in Sunshine.flac"
+        },
+        {
+          "title": "Side Piece",
+          "artist": "Frank Braley/Gautier Capuçon/Michael Fine",
+          "track": 13,
+          "duration": 205.28,
+          "src": "Music/Frank Braley,Gautier Capuçon,Michael Fine - Side Piece.flac"
+        },
+        {
+          "title": "Of Wind and Rain",
+          "artist": "Capucelli/Gautier Capuçon/Michael Fine",
+          "track": 14,
+          "duration": 230.88,
+          "src": "Music/Capucelli,Gautier Capuçon,Michael Fine - Of Wind and Rain.flac"
+        },
+        {
+          "title": "Toro Tsa Kwa",
+          "artist": "Abel Selaocoe/Gautier Capuçon/Michael Fine",
+          "track": 15,
+          "duration": 243.11,
+          "src": "Music/Abel Selaocoe,Gautier Capuçon,Michael Fine - Toro Tsa Kwa.flac"
+        },
+        {
+          "title": "The Usual Illusion",
+          "artist": "Gautier Capuçon/Michael Fine",
+          "track": 16,
+          "duration": 204.56,
+          "src": "Music/Gautier Capuçon,Michael Fine - The Usual Illusion.flac"
+        },
+        {
+          "title": "Never Say Never",
+          "artist": "Gautier Capuçon/Michael Fine/Sarah Rebecca",
+          "track": 17,
+          "duration": 254.8,
+          "src": "Music/Gautier Capuçon,Michael Fine,Sarah Rebecca - Never Say Never.flac"
+        }
+      ]
+    },
+    {
+      "album": "Your world is not all correct",
+      "albumArtist": "MYY.",
+      "year": null,
+      "cover": "Music/cover/Your_world_is_not_all_correct.jpg",
+      "tracks": [
+        {
+          "title": "Silent words",
+          "artist": "MYY.",
+          "track": 1,
+          "duration": 730.87,
+          "src": "Music/MYY. - Silent words.flac"
+        },
+        {
+          "title": "For love that is not rewarded",
+          "artist": "MYY.",
+          "track": 2,
+          "duration": 813.79,
+          "src": "Music/MYY. - For love that is not rewarded.flac"
+        },
+        {
+          "title": "Summer",
+          "artist": "MYY.",
+          "track": 3,
+          "duration": 631.07,
+          "src": "Music/MYY. - Summer.flac"
+        },
+        {
+          "title": "Orbit of the wind",
+          "artist": "MYY.",
+          "track": 4,
+          "duration": 829.23,
+          "src": "Music/MYY. - Orbit of the wind.flac"
+        },
+        {
+          "title": "Returning the hourglass",
+          "artist": "MYY.",
+          "track": 5,
+          "duration": 876.05,
+          "src": "Music/MYY. - Returning the hourglass.flac"
+        }
+      ]
+    },
+    {
+      "album": "着万象（Let it be）",
+      "albumArtist": "陈抒妮",
+      "year": null,
+      "cover": "Music/cover/着万象_Let_it_be.jpg",
+      "tracks": [
+        {
+          "title": "摘（Leaves fall, dreams rise）",
+          "artist": "陈抒妮",
+          "track": 1,
+          "duration": 238.43,
+          "src": "Music/陈抒妮 - 摘（Leaves fall, dreams rise）.flac"
+        },
+        {
+          "title": "拜（Pottery market）",
+          "artist": "陈抒妮",
+          "track": 2,
+          "duration": 201.57,
+          "src": "Music/陈抒妮 - 拜（Pottery market）.flac"
+        },
+        {
+          "title": "好云哎（Nature's Cradle）",
+          "artist": "陈抒妮",
+          "track": 3,
+          "duration": 211.0,
+          "src": "Music/陈抒妮 - 好云哎（Nature's Cradle）.flac"
+        },
+        {
+          "title": "Senbaya！",
+          "artist": "陈抒妮",
+          "track": 4,
+          "duration": 217.0,
+          "src": "Music/陈抒妮 - Senbaya！.flac"
+        },
+        {
+          "title": "簪花雨（Flower hairpin）",
+          "artist": "陈抒妮",
+          "track": 5,
+          "duration": 257.56,
+          "src": "Music/陈抒妮 - 簪花雨（Flower hairpin）.flac"
+        },
+        {
+          "title": "破阵子（Dangerous Chess）",
+          "artist": "陈抒妮",
+          "track": 6,
+          "duration": 172.4,
+          "src": "Music/陈抒妮 - 破阵子（Dangerous Chess）.flac"
+        }
+      ]
+    }
+  ]
+}
