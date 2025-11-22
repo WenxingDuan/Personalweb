@@ -3,8 +3,6 @@
 
 # Generated assets
 /trash/
-# Allow committed covers inside Music
-!/Music/cover/
 
 # Python cache
 __pycache__/

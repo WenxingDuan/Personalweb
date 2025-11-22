@@ -48,6 +48,7 @@ def normalize_name(name: str) -> str:
 
 
 def build_library(music_dir: Path) -> Dict:
+    root_dir = music_dir.parent
     albums: Dict[str, Dict] = {}
     album_covers: Dict[str, Dict[str, bytes]] = {}
 
@@ -73,7 +74,7 @@ def build_library(music_dir: Path) -> Dict:
         cover_mime = cover_pic.mime if cover_pic else None
         cover_data = cover_pic.data if cover_pic else None
 
-        rel_src = path.relative_to(music_dir.parent).as_posix()
+        rel_src = path.relative_to(root_dir).as_posix()
 
         album_entry = albums.setdefault(
             album,
@@ -114,7 +115,7 @@ def build_library(music_dir: Path) -> Dict:
 
     albums_list: List[Dict] = sorted(albums.values(), key=lambda a: a["album"].lower())
 
-    cover_dir = music_dir / "cover"
+    cover_dir = root_dir / "images" / "cover"
     cover_dir.mkdir(exist_ok=True)
 
     def slugify(name: str) -> str:
@@ -161,7 +162,7 @@ def build_library(music_dir: Path) -> Dict:
             print(f"[cover] Failed to write cover for {album_name}: {exc}")
             continue
 
-        album_entry["cover"] = out_path.relative_to(music_dir.parent).as_posix()
+        album_entry["cover"] = out_path.relative_to(root_dir).as_posix()
 
     return {
         "generatedAt": datetime.now().isoformat(timespec="seconds"),
