@@ -18,31 +18,55 @@
     <style>
         :root {
             color-scheme: light dark;
-            --accent: #ff4c60;
-            --panel: rgba(14, 16, 32, 0.82);
-            --panel-2: rgba(21, 24, 43, 0.75);
+            --accent: #1dd4d4;
+            --panel: rgba(10, 18, 28, 0.9);
+            --panel-2: rgba(16, 26, 40, 0.85);
             --ink: #f8f9fb;
             --muted: rgba(248, 249, 251, 0.75);
+            --bg: radial-gradient(circle at 25% 20%, #1a2a38, #070c14 60%);
+            --card-shadow: 0 26px 70px rgba(0, 0, 0, 0.45);
+            --track-bg: transparent;
+            --track-bg-active: rgba(29, 212, 212, 0.14);
+            --track-border: rgba(255, 255, 255, 0.06);
+            --track-border-active: rgba(29, 212, 212, 0.5);
+            --surface-contrast: #1c2035;
+        }
+
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --panel: rgba(255, 255, 255, 0.95);
+            --panel-2: rgba(243, 247, 251, 0.96);
+            --ink: #0b1320;
+            --muted: rgba(12, 15, 26, 0.65);
+            --bg: radial-gradient(circle at 20% 20%, #f4fbff, #e4f2f6 60%);
+            --card-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+            --track-bg: transparent;
+            --track-bg-active: rgba(29, 212, 212, 0.16);
+            --track-border: rgba(0, 0, 0, 0.08);
+            --track-border-active: rgba(29, 212, 212, 0.55);
+            --surface-contrast: #e7f2f6;
         }
 
         body {
             min-height: 100vh;
             margin: 0;
             font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: radial-gradient(circle at 20% 20%, #303857, #0a0c19 60%);
+            background: var(--bg);
             color: var(--ink);
             display: flex;
             justify-content: center;
             padding: 2.5rem 1rem 4rem;
+            transition: background 0.25s ease, color 0.25s ease;
         }
 
         main {
             width: min(1100px, 100%);
-            background: linear-gradient(145deg, rgba(18, 20, 36, 0.9), rgba(12, 14, 26, 0.9));
+            background: linear-gradient(145deg, var(--panel), var(--panel));
             border-radius: 22px;
             padding: clamp(1.25rem, 3vw, 2.5rem);
-            box-shadow: 0 26px 70px rgba(0, 0, 0, 0.45);
+            box-shadow: var(--card-shadow);
             backdrop-filter: blur(18px);
+            transition: background 0.25s ease, box-shadow 0.25s ease;
         }
 
         /* Override global header background from layout.css so header-background.jpg is not used on this page */
@@ -58,7 +82,11 @@
         }
 
         .page-header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
             margin-bottom: 1.5rem;
         }
 
@@ -66,11 +94,39 @@
             margin: 0.2rem 0;
             font-size: clamp(2rem, 4vw, 2.8rem);
             letter-spacing: 0.02em;
+            color: var(--ink);
         }
 
         .page-header p {
             margin: 0.2rem 0;
             color: var(--muted);
+        }
+
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: var(--panel-2);
+            color: var(--ink);
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        :root[data-theme="light"] .theme-toggle {
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        :root[data-theme="light"] .theme-toggle:hover {
+            border-color: rgba(0, 0, 0, 0.15);
         }
 
         .section-heading {
@@ -110,7 +166,7 @@
         }
 
         .album-card {
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--track-border);
             background: var(--panel-2);
             border-radius: 16px;
             padding: 0.75rem;
@@ -127,12 +183,12 @@
 
         .album-card:hover {
             transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.16);
+            border-color: var(--track-border-active);
         }
 
         .album-card.active {
-            border-color: rgba(255, 76, 96, 0.55);
-            box-shadow: 0 10px 30px rgba(255, 76, 96, 0.2);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(29, 212, 212, 0.25);
         }
 
         .cover-wrap {
@@ -140,7 +196,7 @@
             aspect-ratio: 1;
             border-radius: 12px;
             overflow: hidden;
-            background: linear-gradient(135deg, #24304b, #111525);
+            background: linear-gradient(135deg, rgba(29, 212, 212, 0.35), rgba(17, 28, 42, 0.9));
             margin-bottom: 0.6rem;
         }
 
@@ -254,8 +310,8 @@
 
         .controls button {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background: #1c2035;
-            color: #fff;
+            background: var(--surface-contrast);
+            color: var(--ink);
             padding: 0.85rem 1.1rem;
             border-radius: 12px;
             font-size: 1rem;
@@ -264,7 +320,7 @@
         }
 
         .controls button:hover {
-            background: #272c45;
+            background: rgba(29, 212, 212, 0.12);
             transform: translateY(-1px);
         }
 
@@ -307,6 +363,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 1rem;
+            box-shadow: var(--card-shadow);
         }
 
         .playlist h2 {
@@ -331,9 +388,9 @@
 
         .track-btn {
             width: 100%;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #f8f9fb;
+            background: var(--track-bg);
+            border: 1px solid var(--track-border);
+            color: var(--ink);
             padding: 0.65rem 0.75rem;
             border-radius: 12px;
             display: grid;
@@ -347,13 +404,15 @@
 
         .track-btn:hover,
         .track-btn:focus-visible {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--track-bg-active);
+            border-color: var(--track-border-active);
             outline: none;
         }
 
         .track-btn.active {
-            background: rgba(255, 76, 96, 0.12);
-            border-color: rgba(255, 76, 96, 0.4);
+            background: var(--track-bg-active);
+            border-color: var(--track-border-active);
+            color: var(--ink);
         }
 
         .track-title {
@@ -366,6 +425,7 @@
 
         .track-title strong {
             font-weight: 600;
+            color: var(--ink);
         }
 
         .track-title small {
@@ -400,8 +460,13 @@
 <body>
     <main>
         <header class="page-header">
-            <h1>Albums from Music</h1>
-            <p>Metadata-driven, no hardcoded file names. Pick an album to explore tracks.</p>
+            <div>
+                <h1>Silent Library</h1>
+            </div>
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+                <span>Light</span>
+            </button>
         </header>
 
         <section class="album-section" aria-label="Album selection">
@@ -479,6 +544,7 @@
         const prevBtn = document.getElementById("prev-btn");
         const nextBtn = document.getElementById("next-btn");
         const audio = document.getElementById("audio");
+        const themeToggle = document.getElementById("theme-toggle");
 
         let albums = [];
         let currentAlbumIndex = 0;
@@ -701,6 +767,12 @@
             prevBtn.addEventListener("click", () => playNext(-1));
             nextBtn.addEventListener("click", () => playNext(1));
 
+            themeToggle.addEventListener("click", () => {
+                const current = document.documentElement.getAttribute("data-theme") || "dark";
+                const next = current === "light" ? "dark" : "light";
+                applyTheme(next);
+            });
+
             albumGrid.addEventListener("click", (event) => {
                 const card = event.target.closest(".album-card");
                 if (!card) return;
@@ -776,6 +848,15 @@
         attachEvents();
         loadLibrary();
         audio.volume = volume.value / 100;
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+            themeToggle.querySelector("span").textContent = theme === "light" ? "Dark" : "Light";
+        }
+
+        const storedTheme = localStorage.getItem("theme");
+        applyTheme(storedTheme === "light" ? "light" : "dark");
     </script>
 </body>
 
