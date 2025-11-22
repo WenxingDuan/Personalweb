@@ -157,12 +157,34 @@
             border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1.25rem;
+            overflow: hidden;
         }
 
         .album-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            display: flex;
+            flex-wrap: nowrap;
             gap: 0.8rem;
+            overflow-x: auto;
+            padding-bottom: 0.4rem;
+            scroll-snap-type: x mandatory;
+        }
+
+        .album-grid::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .album-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+        }
+
+        .album-grid::-webkit-scrollbar-thumb {
+            background: rgba(29, 212, 212, 0.6);
+            border-radius: 999px;
+        }
+
+        .album-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(29, 212, 212, 0.8);
         }
 
         .album-card {
@@ -174,6 +196,8 @@
             text-align: left;
             cursor: pointer;
             transition: transform 0.15s ease, border-color 0.15s ease, background 0.2s ease;
+            flex: 0 0 180px;
+            scroll-snap-align: start;
         }
 
         .album-card:focus-visible {
@@ -452,6 +476,7 @@
 
             .album-card {
                 padding: 0.65rem;
+                flex: 0 0 150px;
             }
         }
     </style>
