@@ -157,7 +157,7 @@
             border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1.25rem;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .album-grid {
@@ -165,7 +165,7 @@
             flex-wrap: nowrap;
             gap: 0.8rem;
             overflow-x: auto;
-            padding-bottom: 0.4rem;
+            padding: 0.2rem 0 0.4rem;
             scroll-snap-type: x mandatory;
         }
 
@@ -203,6 +203,8 @@
             gap: 0.45rem;
             min-height: 320px;
             box-sizing: border-box;
+            position: relative;
+            z-index: 0;
         }
 
         .album-card:focus-visible {
@@ -211,13 +213,14 @@
         }
 
         .album-card:hover {
-            transform: translateY(-2px);
             border-color: var(--track-border-active);
+            z-index: 2;
         }
 
         .album-card.active {
             border-color: var(--accent);
             box-shadow: 0 10px 30px rgba(29, 212, 212, 0.25);
+            z-index: 3;
         }
 
         :root[data-theme="light"] .album-card {
