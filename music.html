@@ -219,6 +219,22 @@
             box-shadow: 0 10px 30px rgba(29, 212, 212, 0.25);
         }
 
+        :root[data-theme="light"] .album-card {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        }
+
+        :root[data-theme="light"] .album-card:hover {
+            border-color: rgba(29, 212, 212, 0.35);
+            box-shadow: 0 14px 34px rgba(29, 212, 212, 0.18);
+        }
+
+        :root[data-theme="light"] .album-card.active {
+            border-color: rgba(29, 212, 212, 0.6);
+            box-shadow: 0 16px 38px rgba(29, 212, 212, 0.24);
+        }
+
         .cover-wrap {
             position: relative;
             aspect-ratio: 1;
@@ -251,6 +267,7 @@
             margin-bottom: 0.15rem;
             min-height: 2.4em;
             line-height: 1.2;
+            color: var(--ink);
         }
 
         .album-meta span {
