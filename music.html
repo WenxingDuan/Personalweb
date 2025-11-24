@@ -198,6 +198,10 @@
             transition: transform 0.15s ease, border-color 0.15s ease, background 0.2s ease;
             flex: 0 0 180px;
             scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            min-height: 320px;
         }
 
         .album-card:focus-visible {
@@ -245,16 +249,26 @@
         .album-meta strong {
             display: block;
             margin-bottom: 0.15rem;
+            min-height: 2.4em;
+            line-height: 1.2;
         }
 
         .album-meta span {
             display: block;
             color: var(--muted);
             font-size: 0.95rem;
+            min-height: 1.2em;
         }
 
         .album-meta small {
             color: rgba(248, 249, 251, 0.6);
+        }
+
+        .album-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            flex: 1;
         }
 
         .player-panel {
@@ -373,6 +387,32 @@
 
         input[type="range"] {
             accent-color: var(--accent);
+        }
+
+        .progress-track {
+            position: relative;
+            flex: 1;
+            height: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .buffer-bar {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 6px;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            pointer-events: none;
+        }
+
+        .progress-track input[type="range"] {
+            position: relative;
+            z-index: 1;
+            background: transparent;
         }
 
         .seek-label {
@@ -530,7 +570,10 @@
 
                 <div class="progress-row">
                     <span class="seek-label" id="current-time">00:00</span>
-                    <input type="range" min="0" max="100" value="0" id="progress" aria-label="Playback progress">
+                    <div class="progress-track">
+                        <div class="buffer-bar" id="buffer-bar"></div>
+                        <input type="range" min="0" max="100" value="0" id="progress" aria-label="Playback progress">
+                    </div>
                     <span class="seek-label" id="duration">00:00</span>
                 </div>
 
@@ -564,6 +607,7 @@
         const currentTimeEl = document.getElementById("current-time");
         const durationEl = document.getElementById("duration");
         const progress = document.getElementById("progress");
+        const bufferBar = document.getElementById("buffer-bar");
         const volume = document.getElementById("volume");
         const playToggle = document.getElementById("play-toggle");
         const prevBtn = document.getElementById("prev-btn");
@@ -595,6 +639,16 @@
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
             return `${pad(m)}:${pad(s)}`;
+        }
+
+        function updateBuffered() {
+            if (!audio.duration || audio.buffered.length === 0) {
+                bufferBar.style.width = "0%";
+                return;
+            }
+            const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
+            const percent = Math.min(bufferedEnd / audio.duration, 1) * 100;
+            bufferBar.style.width = `${percent}%`;
         }
 
         function placeholderText(name) {
@@ -710,6 +764,12 @@
             currentTrackIndex = index;
             const track = album.tracks[index];
 
+            // Drop previous buffer to free memory/cache of finished track
+            if (audio.src) {
+                audio.removeAttribute("src");
+                audio.load();
+            }
+
             audio.src = encodeURI(track.src);
             currentTrackEl.textContent = track.title;
             currentArtistEl.textContent = track.artist || album.albumArtist || "";
@@ -820,13 +880,17 @@
             if (!audio.duration) return;
             currentTimeEl.textContent = formatTime(audio.currentTime);
             progress.value = (audio.currentTime / audio.duration) * 100;
+            updateBuffered();
         });
 
-            audio.addEventListener("loadedmetadata", () => {
-                durationEl.textContent = formatTime(audio.duration);
-            });
+        audio.addEventListener("loadedmetadata", () => {
+            durationEl.textContent = formatTime(audio.duration);
+            updateBuffered();
+        });
 
-            audio.addEventListener("ended", () => playNext(1, true));
+        audio.addEventListener("ended", () => playNext(1, true));
+
+        audio.addEventListener("progress", updateBuffered);
 
         progress.addEventListener("input", () => {
             if (!audio.duration) return;
