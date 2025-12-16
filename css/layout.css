@@ -342,6 +342,14 @@ ul#nav li.current a { color: #F06000; }
    font: 15px/24px 'opensans-regular', sans-serif;
    margin-top: 6px;
 }
+#resume .Pub .info {
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+#resume .Pub .info a {
+   display: inline-block;
+   max-width: 100%;
+}
 
 /*----------------------------------------------*/
 /*	Skill Bars
@@ -1070,4 +1078,3 @@ footer .social-links li:first-child { margin-left: 0; }
  	border-radius: 100%;
 }
 #go-top a:hover { background-color: #0F9095; }
-
