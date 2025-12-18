@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just keep breathing......</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="shortcut icon" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: radial-gradient(circle at 20% 20%, #182448, #0d1428 40%, #080b18 90%);
+            --card: rgba(14, 18, 36, 0.72);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #eef2ff;
+            --muted: #a8b5d9;
+            --inhale: #4de1c1;
+            --hold: #f4c95d;
+            --exhale: #7d8cff;
+            --shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+            --ring: rgba(125, 140, 255, 0.22);
+            --radius: 16px;
+            --focus: rgba(77, 225, 193, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Sora', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 14px;
+        }
+
+        .scene {
+            position: relative;
+            width: min(720px, 100%);
+        }
+
+        .glow {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        @keyframes drift-one {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            50% {
+                transform: translate3d(18px, 14px, 0);
+            }
+        }
+
+        @keyframes drift-two {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            50% {
+                transform: translate3d(-16px, -10px, 0);
+            }
+        }
+
+        .glow.one {
+            width: 260px;
+            height: 260px;
+            background: rgba(77, 225, 193, 0.95);
+            top: -80px;
+            left: -40px;
+            animation: drift-one 16s ease-in-out infinite;
+        }
+
+        .glow.two {
+            width: 300px;
+            height: 300px;
+            background: rgba(125, 140, 255, 0.95);
+            bottom: -120px;
+            right: -60px;
+            animation: drift-two 18s ease-in-out infinite;
+        }
+
+        main {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(18px, 3.4vw, 34px);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(77, 225, 193, 0.08), transparent 45%),
+                radial-gradient(circle at 90% 10%, rgba(244, 201, 93, 0.08), transparent 40%),
+                radial-gradient(circle at 80% 90%, rgba(125, 140, 255, 0.12), transparent 45%);
+            opacity: 0.75;
+            pointer-events: none;
+        }
+
+        main>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            margin: 0 0 6px;
+            font-size: clamp(24px, 4.2vw, 36px);
+            letter-spacing: 0.4px;
+        }
+
+        header p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .card.center {
+            display: grid;
+            justify-items: center;
+        }
+
+        .orb {
+            width: min(220px, 52vw);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.14), rgba(77, 225, 193, 0.14) 40%, rgba(125, 140, 255, 0.12));
+            border: 1px solid var(--border);
+            display: grid;
+            place-items: center;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.04), 0 14px 28px rgba(0, 0, 0, 0.42);
+            transform: scale(0.92);
+            transition: transform 0.9s ease, box-shadow 0.5s ease, border-color 0.35s ease;
+            margin: 8px auto 0;
+        }
+
+        .orb::after {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 0.55;
+            transition: opacity 0.35s ease;
+        }
+
+        body.is-running .orb::after {
+            opacity: 0.85;
+        }
+
+        body.is-running[data-phase="inhale"] .orb {
+            transform: scale(1.04);
+            border-color: rgba(77, 225, 193, 0.35);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.05), 0 18px 32px rgba(0, 0, 0, 0.46), 0 0 18px rgba(77, 225, 193, 0.14);
+        }
+
+        body.is-running[data-phase="hold"] .orb {
+            transform: scale(1.01);
+            border-color: rgba(244, 201, 93, 0.35);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.05), 0 18px 32px rgba(0, 0, 0, 0.46), 0 0 18px rgba(244, 201, 93, 0.12);
+        }
+
+        body.is-running[data-phase="exhale"] .orb {
+            transform: scale(0.9);
+            border-color: rgba(125, 140, 255, 0.4);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.05), 0 18px 32px rgba(0, 0, 0, 0.46), 0 0 18px rgba(125, 140, 255, 0.12);
+        }
+
+        .orb .count {
+            font-size: clamp(40px, 7.8vw, 54px);
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+
+        .status {
+            margin-top: 14px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .phase-name {
+            font-size: clamp(18px, 3.8vw, 22px);
+            font-weight: 600;
+        }
+
+        .phase-meta {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .progress-wrap {
+            margin-top: 14px;
+            width: 100%;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            color: var(--muted);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .phase-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .phase-pill span:first-child {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .progress {
+            position: relative;
+            height: 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-fill {
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            left: 0;
+            top: 0;
+            border-radius: inherit;
+            background: var(--inhale);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        .actions {
+            margin-top: 16px;
+            display: grid;
+            gap: 10px;
+            justify-items: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4de1c1, #7d8cff);
+            color: #0a0f1f;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(77, 225, 193, 0.25);
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            min-width: 200px;
+            touch-action: manipulation;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 36px rgba(77, 225, 193, 0.35);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted);
+            font-size: 13px;
+            border: 1px solid var(--border);
+        }
+
+        .badge-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .microcopy {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        @media (max-width: 420px) {
+            main {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scene">
+        <div class="glow one"></div>
+        <div class="glow two"></div>
+        <main>
+            <header class="center">
+                <h1>Keep calm, you will be fine</h1>
+                <p>4-7-8 Breathing: Inhale for 4 seconds, hold for 7, exhale for 8.
+                    <br>Tap start and follow the rhythm.
+                </p>
+            </header>
+            <div class="stack">
+                <section class="card center" aria-label="Breathing timer">
+                    <div class="orb" aria-hidden="true">
+                        <div class="count" id="countdown">0.0</div>
+                    </div>
+                    <div class="status" aria-live="polite">
+                        <div class="phase-name" id="phaseName">Ready</div>
+                        <div class="phase-meta" id="phaseMeta">4 • 7 • 8</div>
+                    </div>
+
+                    <div class="progress-wrap">
+                        <div class="progress-labels" aria-label="Phase legend">
+                            <span class="phase-pill"><span style="background: var(--inhale)"></span>Inhale 4s</span>
+                            <span class="phase-pill"><span style="background: var(--hold)"></span>Hold 7s</span>
+                            <span class="phase-pill"><span style="background: var(--exhale)"></span>Exhale 8s</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                            aria-label="Phase progress">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="startBtn" type="button">Start</button>
+                        <div class="badge-row" aria-label="Session stats">
+                            <span class="badge" id="sessionBadge" title="Time remaining">05:00</span>
+                            <span class="badge" id="cycleBadge">0 cycles</span>
+                        </div>
+                        <div class="microcopy" id="microcopy">Tip: breathe through your nose and relax your shoulders.
+                            Space = start/reset.</div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+
+        const phases = [
+            {
+                key: 'inhale',
+                label: 'Inhale',
+                duration: 4,
+                color: getComputedStyle(document.documentElement).getPropertyValue('--inhale').trim(),
+                tip: 'Inhale slowly through your nose.'
+            },
+            {
+                key: 'hold',
+                label: 'Hold',
+                duration: 7,
+                color: getComputedStyle(document.documentElement).getPropertyValue('--hold').trim(),
+                tip: 'Hold gently. Keep your jaw and shoulders relaxed.'
+            },
+            {
+                key: 'exhale',
+                label: 'Exhale',
+                duration: 8,
+                color: getComputedStyle(document.documentElement).getPropertyValue('--exhale').trim(),
+                tip: 'Exhale long and steady until you feel light.'
+            },
+        ];
+
+        const startBtn = document.getElementById('startBtn');
+        const progressFill = document.getElementById('progressFill');
+        const phaseName = document.getElementById('phaseName');
+        const phaseMeta = document.getElementById('phaseMeta');
+        const countdown = document.getElementById('countdown');
+        const sessionBadge = document.getElementById('sessionBadge');
+        const cycleBadge = document.getElementById('cycleBadge');
+        const microcopy = document.getElementById('microcopy');
+
+        const DEFAULT_SESSION_SECONDS = 5 * 60;
+        let running = false;
+        let currentPhase = 0;
+        let cycleCount = 0;
+        let phaseTimer = null;
+        let rafId = null;
+        let sessionRafId = null;
+        const progressEl = progressFill.parentElement;
+
+        function animateSwap(el) {
+            if (reduceMotion || !el?.animate) return;
+            el.animate(
+                [
+                    { opacity: 0, transform: 'translateY(4px)' },
+                    { opacity: 1, transform: 'translateY(0)' },
+                ],
+                { duration: 220, easing: 'ease-out' }
+            );
+        }
+
+        function setProgress(value) {
+            const percent = Math.max(0, Math.min(100, value));
+            progressFill.style.width = `${percent}%`;
+            progressEl?.setAttribute('aria-valuenow', String(Math.round(percent)));
+        }
+
+        function resetProgress() {
+            progressFill.style.transition = 'none';
+            setProgress(0);
+            progressFill.style.background = phases[currentPhase].color;
+            // Force a reflow so width reset takes effect before next transition.
+            void progressFill.offsetWidth;
+        }
+
+        function stopTimers() {
+            if (phaseTimer) {
+                clearTimeout(phaseTimer);
+                phaseTimer = null;
+            }
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+        }
+
+        function stopSessionTimer() {
+            if (sessionRafId) {
+                cancelAnimationFrame(sessionRafId);
+                sessionRafId = null;
+            }
+        }
+
+        function formatSessionTime(seconds) {
+            const total = Math.max(0, Math.ceil(seconds));
+            const minutes = Math.floor(total / 60);
+            const secs = total % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateCountdown(duration, startedAt) {
+            const step = (now) => {
+                if (!running) return;
+                const elapsed = (now - startedAt) / 1000;
+                const remaining = Math.max(0, duration - elapsed);
+                countdown.textContent = remaining.toFixed(1);
+                if (remaining > 0.05) {
+                    rafId = requestAnimationFrame(step);
+                }
+            };
+            rafId = requestAnimationFrame(step);
+        }
+
+        function updateSessionCountdown(duration, startedAt) {
+            const step = (now) => {
+                if (!running) return;
+                const elapsed = (now - startedAt) / 1000;
+                const remaining = Math.max(0, duration - elapsed);
+                sessionBadge.textContent = formatSessionTime(remaining);
+                if (remaining === 0) {
+                    finishSession();
+                    return;
+                }
+                sessionRafId = requestAnimationFrame(step);
+            };
+            sessionRafId = requestAnimationFrame(step);
+        }
+
+        function runPhase(index) {
+            if (!running) return;
+            currentPhase = index;
+            const phase = phases[index];
+
+            phaseName.textContent = phase.label;
+            phaseMeta.textContent = `${phase.duration}s`;
+            microcopy.textContent = `Tip: ${phase.tip} Space = start/reset.`;
+            document.body.dataset.phase = phase.key;
+            countdown.textContent = phase.duration.toFixed(1);
+            animateSwap(phaseName);
+            animateSwap(phaseMeta);
+
+            resetProgress();
+
+            requestAnimationFrame(() => {
+                progressFill.style.transition = `width ${phase.duration}s linear, background-color 0.25s ease`;
+                progressFill.style.background = phase.color;
+                setProgress(100);
+            });
+
+            stopTimers();
+            const startTime = performance.now();
+            updateCountdown(phase.duration, startTime);
+
+            phaseTimer = setTimeout(() => {
+                const next = (index + 1) % phases.length;
+                if (next === 0) {
+                    cycleCount += 1;
+                    cycleBadge.textContent = `${cycleCount} cycle${cycleCount === 1 ? '' : 's'}`;
+                }
+                runPhase(next);
+            }, phase.duration * 1000);
+        }
+
+        function finishSession() {
+            running = false;
+            document.body.classList.remove('is-running');
+            delete document.body.dataset.phase;
+            stopTimers();
+            stopSessionTimer();
+            resetProgress();
+            phaseName.textContent = 'Done';
+            phaseMeta.textContent = `Completed ${cycleCount} cycle${cycleCount === 1 ? '' : 's'}`;
+            countdown.textContent = '0.0';
+            sessionBadge.textContent = formatSessionTime(0);
+            microcopy.textContent = 'Nice work. Tap Start to run another 5-minute session. Space = start/reset.';
+            startBtn.textContent = 'Start';
+            animateSwap(phaseName);
+            animateSwap(phaseMeta);
+        }
+
+        function startSession() {
+            stopTimers();
+            stopSessionTimer();
+            cycleCount = 0;
+            cycleBadge.textContent = '0 cycles';
+            running = true;
+            document.body.classList.add('is-running');
+            startBtn.textContent = 'Reset';
+            sessionBadge.textContent = formatSessionTime(DEFAULT_SESSION_SECONDS);
+            const sessionStartTime = performance.now();
+            updateSessionCountdown(DEFAULT_SESSION_SECONDS, sessionStartTime);
+            runPhase(0);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (running) {
+                running = false;
+                document.body.classList.remove('is-running');
+                delete document.body.dataset.phase;
+                stopTimers();
+                stopSessionTimer();
+                resetProgress();
+                phaseName.textContent = 'Ready';
+                phaseMeta.textContent = '4 • 7 • 8';
+                countdown.textContent = '0.0';
+                sessionBadge.textContent = formatSessionTime(DEFAULT_SESSION_SECONDS);
+                cycleCount = 0;
+                cycleBadge.textContent = '0 cycles';
+                microcopy.textContent = 'Tip: breathe through your nose and relax your shoulders. Space = start/reset.';
+                startBtn.textContent = 'Start';
+            } else {
+                startSession();
+            }
+        });
+
+        // Space toggles start/reset.
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                startBtn.click();
+            }
+        });
+
+        sessionBadge.textContent = formatSessionTime(DEFAULT_SESSION_SECONDS);
+    </script>
+</body>
+
+</html>
