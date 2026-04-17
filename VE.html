@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Frame Extractor</title>
+  <style>
+    :root {
+      --bg-1: #0f172a;
+      --bg-2: #111827;
+      --panel: rgba(255, 255, 255, 0.08);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text: #e5eefc;
+      --muted: #9fb0cf;
+      --primary: #7c3aed;
+      --primary-2: #22c55e;
+      --danger: #ef4444;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.28), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.20), transparent 28%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .app {
+      width: min(1200px, 100%);
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-inner {
+      padding: 24px;
+    }
+
+    .hero {
+      padding: 28px 28px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn,
+    .file-label {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn:hover,
+    .file-label:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary,
+    .file-label {
+      color: white;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      box-shadow: 0 10px 24px rgba(124, 58, 237, 0.32);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-success {
+      color: white;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+    }
+
+    .btn-danger {
+      color: white;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .video-shell {
+      padding: 18px 24px 24px;
+    }
+
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    video,
+    .frame-preview img,
+    .empty-state {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      padding: 32px;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .controls {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .time-readout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-wrap {
+      margin-top: 12px;
+      position: relative;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 var(--progress, 0%), rgba(255,255,255,0.14) var(--progress, 0%), rgba(255,255,255,0.14) 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #8b5cf6;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #8b5cf6;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    }
+
+    .grid-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .meta-card {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 15px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .side-title {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .side-desc {
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .frame-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      color: #dbeafe;
+      background: rgba(59, 130, 246, 0.14);
+      border: 1px solid rgba(96, 165, 250, 0.22);
+      margin-bottom: 12px;
+    }
+
+    .hint-list {
+      margin: 18px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.9;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .panel-inner,
+      .video-shell {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .grid-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar,
+      .control-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn,
+      .file-label {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <div class="hero">
+        <h1 class="title">Video Frame Extractor</h1>
+        <p class="subtitle">
+          Runs entirely on the frontend with no backend required. Upload a local video, preview it in the browser, drag the timeline to any moment, capture the current frame, and save it as an image.
+        </p>
+        <div class="toolbar">
+          <label class="file-label" for="videoInput">Choose Video File</label>
+          <input id="videoInput" type="file" accept="video/*" />
+          <button id="playPauseBtn" class="btn btn-secondary" disabled>Play</button>
+          <button id="captureBtn" class="btn btn-primary" disabled>Capture Current Frame</button>
+          <button id="resetBtn" class="btn btn-danger" disabled>Reset</button>
+        </div>
+      </div>
+
+      <div class="video-shell">
+        <div class="video-wrap" id="videoWrap">
+          <div class="empty-state" id="emptyState">
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px;">Upload a video to get started</div>
+              <div>Supports local video preview, draggable timeline navigation, real-time frame capture, and image download.</div>
+            </div>
+          </div>
+          <video id="video" preload="metadata" playsinline></video>
+        </div>
+
+        <div class="controls">
+          <div class="control-row">
+            <button id="backFrameBtn" class="btn btn-secondary" disabled>Back 0.04s</button>
+            <button id="forwardFrameBtn" class="btn btn-secondary" disabled>Forward 0.04s</button>
+          </div>
+
+          <div class="slider-wrap">
+            <input id="progress" type="range" min="0" max="100" value="0" step="0.01" disabled />
+          </div>
+
+          <div class="time-readout">
+            <span id="currentTimeLabel">00:00.00</span>
+            <span id="durationLabel">00:00.00</span>
+          </div>
+
+          <div class="grid-meta">
+            <div class="meta-card">
+              <div class="meta-label">File Name</div>
+              <div class="meta-value" id="fileName">No file selected</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-label">Video Resolution</div>
+              <div class="meta-value" id="videoResolution">-</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-label">Captured Timestamp</div>
+              <div class="meta-value" id="captureTime">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-inner">
+        <div class="badge">Frontend-Only Processing</div>
+        <h2 class="side-title">Current Output Image</h2>
+        <p class="side-desc">
+          After clicking “Capture Current Frame”, the video frame at the current playback position will be drawn onto a Canvas and displayed as an image preview. You can then save it locally with one click.
+        </p>
+
+        <div class="frame-preview" id="framePreviewWrap">
+          <div class="empty-state" id="frameEmpty">
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px;">No image generated yet</div>
+              <div>Upload a video first, then drag the timeline to the target position and capture the frame.</div>
+            </div>
+          </div>
+          <img id="frameImage" alt="Captured video frame" />
+        </div>
+
+        <div class="toolbar" style="margin-top: 18px;">
+          <a id="downloadBtn" class="btn btn-success" download="frame.png" aria-disabled="true" style="pointer-events: none; opacity: 0.45;">Save Image</a>
+        </div>
+
+        <ul class="hint-list">
+          <li>The timeline is fully draggable for precise positioning.</li>
+          <li>The “Back / Forward 0.04s” buttons help fine-tune the capture point.</li>
+          <li>All processing happens locally in the browser and is never uploaded to a server.</li>
+        </ul>
+
+        <p class="footer-note">
+          For the best video decoding and Canvas export experience, use the latest version of Chrome, Edge, or Safari.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const videoInput = document.getElementById('videoInput');
+    const video = document.getElementById('video');
+    const progress = document.getElementById('progress');
+    const currentTimeLabel = document.getElementById('currentTimeLabel');
+    const durationLabel = document.getElementById('durationLabel');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const backFrameBtn = document.getElementById('backFrameBtn');
+    const forwardFrameBtn = document.getElementById('forwardFrameBtn');
+    const frameImage = document.getElementById('frameImage');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const canvas = document.getElementById('canvas');
+    const fileName = document.getElementById('fileName');
+    const videoResolution = document.getElementById('videoResolution');
+    const captureTime = document.getElementById('captureTime');
+    const emptyState = document.getElementById('emptyState');
+    const frameEmpty = document.getElementById('frameEmpty');
+
+    let videoUrl = '';
+    let lastCapturedDataUrl = '';
+    let isSeekingBySlider = false;
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds)) return '00:00.00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      const ms = Math.floor((seconds % 1) * 100);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+    }
+
+    function updateSliderStyle() {
+      const value = Number(progress.value || 0);
+      const min = Number(progress.min || 0);
+      const max = Number(progress.max || 100);
+      const ratio = max > min ? ((value - min) / (max - min)) * 100 : 0;
+      progress.style.setProperty('--progress', `${ratio}%`);
+    }
+
+    function setButtonsEnabled(enabled) {
+      playPauseBtn.disabled = !enabled;
+      captureBtn.disabled = !enabled;
+      resetBtn.disabled = !enabled;
+      backFrameBtn.disabled = !enabled;
+      forwardFrameBtn.disabled = !enabled;
+      progress.disabled = !enabled;
+    }
+
+    function resetOutput() {
+      frameImage.src = '';
+      frameImage.style.display = 'none';
+      frameEmpty.style.display = 'grid';
+      lastCapturedDataUrl = '';
+      downloadBtn.removeAttribute('href');
+      downloadBtn.style.pointerEvents = 'none';
+      downloadBtn.style.opacity = '0.45';
+      downloadBtn.setAttribute('aria-disabled', 'true');
+      captureTime.textContent = '-';
+    }
+
+    function fullReset() {
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
+        videoUrl = '';
+      }
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      progress.value = 0;
+      progress.max = 100;
+      updateSliderStyle();
+      currentTimeLabel.textContent = '00:00.00';
+      durationLabel.textContent = '00:00.00';
+      playPauseBtn.textContent = 'Play';
+      setButtonsEnabled(false);
+      fileName.textContent = 'No file selected';
+      videoResolution.textContent = '-';
+      emptyState.style.display = 'grid';
+      video.style.display = 'none';
+      resetOutput();
+      videoInput.value = '';
+    }
+
+    function syncProgressFromVideo() {
+      if (!Number.isFinite(video.duration) || isSeekingBySlider) return;
+      progress.max = video.duration;
+      progress.value = video.currentTime;
+      updateSliderStyle();
+      currentTimeLabel.textContent = formatTime(video.currentTime);
+      durationLabel.textContent = formatTime(video.duration);
+    }
+
+    function captureCurrentFrame() {
+      if (!video.videoWidth || !video.videoHeight) return;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      lastCapturedDataUrl = dataUrl;
+
+      frameImage.src = dataUrl;
+      frameImage.style.display = 'block';
+      frameEmpty.style.display = 'none';
+
+      const rawName = (fileName.textContent || 'frame').replace(/\.[^.]+$/, '');
+      const safeName = `${rawName || 'frame'}_${video.currentTime.toFixed(2)}s.png`;
+      downloadBtn.href = dataUrl;
+      downloadBtn.download = safeName;
+      downloadBtn.style.pointerEvents = 'auto';
+      downloadBtn.style.opacity = '1';
+      downloadBtn.setAttribute('aria-disabled', 'false');
+      captureTime.textContent = formatTime(video.currentTime);
+    }
+
+    videoInput.addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      resetOutput();
+
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
+      }
+
+      videoUrl = URL.createObjectURL(file);
+      video.src = videoUrl;
+      video.style.display = 'block';
+      emptyState.style.display = 'none';
+      fileName.textContent = file.name;
+      playPauseBtn.textContent = 'Play';
+    });
+
+    video.addEventListener('loadedmetadata', () => {
+      progress.max = video.duration || 100;
+      progress.value = 0;
+      updateSliderStyle();
+      currentTimeLabel.textContent = formatTime(0);
+      durationLabel.textContent = formatTime(video.duration);
+      videoResolution.textContent = `${video.videoWidth} × ${video.videoHeight}`;
+      setButtonsEnabled(true);
+    });
+
+    video.addEventListener('timeupdate', syncProgressFromVideo);
+    video.addEventListener('play', () => {
+      playPauseBtn.textContent = 'Pause';
+    });
+    video.addEventListener('pause', () => {
+      playPauseBtn.textContent = 'Play';
+    });
+    video.addEventListener('ended', () => {
+      playPauseBtn.textContent = 'Play';
+    });
+
+    progress.addEventListener('input', () => {
+      isSeekingBySlider = true;
+      updateSliderStyle();
+      currentTimeLabel.textContent = formatTime(Number(progress.value));
+    });
+
+    progress.addEventListener('change', () => {
+      video.currentTime = Number(progress.value);
+      isSeekingBySlider = false;
+    });
+
+    playPauseBtn.addEventListener('click', async () => {
+      if (!video.src) return;
+      if (video.paused) {
+        try {
+          await video.play();
+        } catch (error) {
+          console.error('Playback failed:', error);
+        }
+      } else {
+        video.pause();
+      }
+    });
+
+    captureBtn.addEventListener('click', () => {
+      if (!video.src) return;
+      captureCurrentFrame();
+    });
+
+    resetBtn.addEventListener('click', fullReset);
+
+    backFrameBtn.addEventListener('click', () => {
+      if (!video.src) return;
+      video.pause();
+      video.currentTime = Math.max(0, video.currentTime - 0.04);
+    });
+
+    forwardFrameBtn.addEventListener('click', () => {
+      if (!video.src) return;
+      video.pause();
+      video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 0.04);
+    });
+
+    frameImage.style.display = 'none';
+    video.style.display = 'none';
+    updateSliderStyle();
+    fullReset();
+  </script>
+</body>
+</html>
