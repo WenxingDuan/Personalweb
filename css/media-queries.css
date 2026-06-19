@@ -237,7 +237,7 @@
    /* About Section
    -------------------------------------------------------------------- */
    #about {
-      padding-top: 72px;
+      padding-top: calc(72px + var(--about-overlap));
       padding-bottom: 60px;
    }
    #about .profile-pic {

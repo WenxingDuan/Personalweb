@@ -23,7 +23,7 @@
 /* ------------------------------------------------------------------ */
 
 body {
-   background: #0f0f0f;
+   background: #080a0c;
    color: #39414d;
 }
 
@@ -42,6 +42,7 @@ body {
    --accent-soft: rgba(18, 162, 168, .12);
    --about-link: #f2a1c0;
    --shadow-soft: 0 18px 50px rgba(18, 30, 36, .12);
+   --about-overlap: 28px;
 }
 
 header[id],
@@ -71,6 +72,7 @@ header {
    background: #161415 url(../images/header-background.jpg) no-repeat top center;
    background-size: cover !important;
         -webkit-background-size: cover !important;
+   background-attachment: fixed;
    text-align: center;
    overflow: hidden;
 }
@@ -83,7 +85,7 @@ header::after {
    bottom: 0;
    left: 0;
    background:
-      linear-gradient(180deg, rgba(6, 10, 18, .5) 0%, rgba(6, 10, 18, .24) 42%, rgba(8, 10, 12, .82) 100%),
+      linear-gradient(180deg, rgba(6, 10, 18, .5) 0%, rgba(6, 10, 18, .28) 44%, rgba(8, 10, 12, .5) 68%, rgba(8, 10, 12, .86) 86%, #080a0c 95%, #080a0c 100%),
       radial-gradient(circle at 50% 40%, rgba(255, 255, 255, .08), transparent 34%);
    pointer-events: none;
 }
@@ -263,8 +265,10 @@ ul#nav li.current a { color: var(--accent); }
 /* ------------------------------------------------------------------ */
 
 #about {
-   background: #2B2B2B;
-   padding-top: 104px;
+   position: relative;
+   background: linear-gradient(180deg, #080a0c 0%, #101113 52%, #202020 100%);
+   margin-top: calc(-1 * var(--about-overlap));
+   padding-top: calc(104px + var(--about-overlap));
    padding-bottom: 82px;
    overflow: hidden;
 }
