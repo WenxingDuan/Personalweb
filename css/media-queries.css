@@ -110,6 +110,11 @@
 
 @media only screen and (max-width: 767px) {
 
+   .row {
+      width: calc(100% - 32px);
+      max-width: 460px;
+   }
+
    /* mobile navigation
    -------------------------------------------------------------------- */
    #nav-wrap {
@@ -264,23 +269,65 @@
 
    /* Resume Section
    --------------------------------------------------------------------- */
+   #resume {
+      overflow-x: hidden;
+   }
+   #resume .row,
+   #resume .row .row {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+   }
    #resume .header-col {
       padding-top: 0;
       margin-bottom: 30px;
       text-align: left;
    }
    #resume h1 { letter-spacing: 2.4px; }
-   #resume .main-col { padding-right: 30px; }
+   #resume .header-col,
+   #resume .main-col {
+      padding-left: 24px;
+      padding-right: 24px;
+   }
    #resume h3, #resume .info { text-align: left; }
    #resume h3 {
       font: 23px/30px 'opensans-bold', sans-serif;
+      overflow-wrap: break-word;
    }
    #resume .info {
       font-size: 15px;
       line-height: 25px;
+      overflow-wrap: break-word;
+      word-break: normal;
    }
    #resume li {
       line-height: 24px;
+   }
+   #resume .Pub {
+      margin-left: 0;
+      margin-right: 0;
+      padding-top: 32px;
+   }
+   #resume .Pub .header-col {
+      margin-bottom: 28px;
+   }
+   #resume .Pub .row.item .twelve.columns {
+      padding-left: 0;
+      padding-right: 0;
+   }
+   #resume .Pub .info {
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      hyphens: auto;
+   }
+   #resume .Pub .info a {
+      display: inline;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
    }
       
    .bars { width: 100%; }
@@ -401,4 +448,13 @@
 }
 
 /* iOS Safari specific fixes */
-/* iOS overrides removed: use normal scrolling background */
+@supports (-webkit-touch-callout: none) {
+   @media only screen and (max-width: 767px) {
+      header {
+         background-attachment: scroll;
+         background-position: center center;
+         background-size: auto 100% !important;
+              -webkit-background-size: auto 100% !important;
+      }
+   }
+}
