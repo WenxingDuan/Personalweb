@@ -90,6 +90,53 @@ header::after {
    pointer-events: none;
 }
 
+.ios-fixed-bg {
+   display: none;
+}
+
+html.ios-fixed-bg-enabled .ios-fixed-bg {
+   display: block;
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: var(--ios-fixed-bg-height, 100vh);
+   background-repeat: no-repeat;
+   background-position: center center;
+   background-size: cover;
+   pointer-events: none;
+   opacity: 0;
+   z-index: 0;
+   will-change: clip-path, opacity;
+}
+
+html.ios-fixed-bg-enabled .ios-fixed-bg--home {
+   background-image: url(../images/header-background.jpg);
+}
+
+html.ios-fixed-bg-enabled .ios-fixed-bg--testimonials {
+   background-image: url(../images/testimonials.jpg);
+}
+
+html.ios-fixed-bg-enabled header,
+html.ios-fixed-bg-enabled #testimonials {
+   background-image: none !important;
+   background-attachment: scroll;
+}
+
+html.ios-fixed-bg-enabled header::after,
+html.ios-fixed-bg-enabled #testimonials:before {
+   z-index: 1;
+}
+
+html.ios-fixed-bg-enabled header .banner,
+html.ios-fixed-bg-enabled header .banner-text,
+html.ios-fixed-bg-enabled header .scrolldown,
+html.ios-fixed-bg-enabled #testimonials .text-container {
+   position: relative;
+   z-index: 2;
+}
+
 /* vertically center banner section */
 header:before {
    content: '';

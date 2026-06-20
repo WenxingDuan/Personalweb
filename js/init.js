@@ -133,7 +133,87 @@
       randomize: false,
    });
 
-/* (rollback) removed iOS parallax emulation to avoid jank */
+/*----------------------------------------------------*/
+/*	iOS fixed background fallback
+/*----------------------------------------------------*/
+
+   (function() {
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var style = document.documentElement.style;
+      var canClip = ('clipPath' in style) || ('webkitClipPath' in style);
+
+      if (!isIOS || !canClip) return;
+
+      var backgrounds = [
+         {
+            section: document.querySelector('header'),
+            className: 'ios-fixed-bg--home'
+         },
+         {
+            section: document.querySelector('#testimonials'),
+            className: 'ios-fixed-bg--testimonials'
+         }
+      ].filter(function(item) {
+         return item.section;
+      }).map(function(item) {
+         var layer = document.createElement('div');
+         layer.className = 'ios-fixed-bg ' + item.className;
+         layer.setAttribute('aria-hidden', 'true');
+         document.body.insertBefore(layer, document.body.firstChild);
+         item.layer = layer;
+         return item;
+      });
+
+      if (!backgrounds.length) return;
+
+      document.documentElement.classList.add('ios-fixed-bg-enabled');
+
+      var ticking = false;
+
+      function viewportHeight() {
+         return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      }
+
+      function updateFixedBackgrounds() {
+         ticking = false;
+
+         var height = viewportHeight();
+         document.documentElement.style.setProperty('--ios-fixed-bg-height', height + 'px');
+
+         backgrounds.forEach(function(item) {
+            var rect = item.section.getBoundingClientRect();
+            var top = Math.max(0, rect.top);
+            var bottom = Math.min(height, rect.bottom);
+
+            if (bottom <= 0 || top >= height) {
+               item.layer.style.opacity = '0';
+               item.layer.style.clipPath = 'inset(0 0 100% 0)';
+               item.layer.style.webkitClipPath = 'inset(0 0 100% 0)';
+               return;
+            }
+
+            var clip = 'inset(' + top + 'px 0 ' + (height - bottom) + 'px 0)';
+            item.layer.style.opacity = '1';
+            item.layer.style.clipPath = clip;
+            item.layer.style.webkitClipPath = clip;
+         });
+      }
+
+      function requestUpdate() {
+         if (ticking) return;
+         ticking = true;
+         window.requestAnimationFrame(updateFixedBackgrounds);
+      }
+
+      updateFixedBackgrounds();
+      $(window).on('scroll resize orientationchange', requestUpdate);
+
+      if (window.visualViewport) {
+         window.visualViewport.addEventListener('resize', requestUpdate);
+         window.visualViewport.addEventListener('scroll', requestUpdate);
+      }
+   })();
 
 /*----------------------------------------------------*/
 /*	contact form
