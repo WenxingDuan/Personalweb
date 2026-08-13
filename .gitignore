@@ -1,6 +1,9 @@
 # Audio library (case variations)
 /Music
 
+# VSCode settings
+/.vscode
+
 # Generated assets
 /trash/
 
