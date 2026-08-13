@@ -1,8 +1,10 @@
 # Audio library (case variations)
 /Music
 
-# VSCode settings
+# IDE settings
 /.vscode
+/.idea
+/.agent
 
 # Generated assets
 /trash/
