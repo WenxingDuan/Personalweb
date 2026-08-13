@@ -2,7 +2,7 @@
 /Music
 
 # VSCode settings
-.vscode/
+/.vscode
 
 # Generated assets
 /trash/
