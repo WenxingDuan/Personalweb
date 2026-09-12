@@ -66,7 +66,9 @@ a h3:hover {
 
 header {
    position: relative;
-   height: 760px;
+   height: 100vh;
+   /* A stable viewport keeps Safari's toolbar animation from resizing the hero. */
+   height: 100svh;
    min-height: 500px;
    width: 100%;
    background: #161415 url(../images/header-background.jpg) no-repeat top center;
@@ -88,53 +90,6 @@ header::after {
       linear-gradient(180deg, rgba(6, 10, 18, .5) 0%, rgba(6, 10, 18, .28) 44%, rgba(8, 10, 12, .5) 68%, rgba(8, 10, 12, .86) 86%, #080a0c 95%, #080a0c 100%),
       radial-gradient(circle at 50% 40%, rgba(255, 255, 255, .08), transparent 34%);
    pointer-events: none;
-}
-
-.ios-fixed-bg {
-   display: none;
-}
-
-html.ios-fixed-bg-enabled .ios-fixed-bg {
-   display: block;
-   position: fixed;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: var(--ios-fixed-bg-height, 100vh);
-   background-repeat: no-repeat;
-   background-position: center center;
-   background-size: cover;
-   pointer-events: none;
-   opacity: 0;
-   z-index: 0;
-   will-change: clip-path, opacity;
-}
-
-html.ios-fixed-bg-enabled .ios-fixed-bg--home {
-   background-image: url(../images/header-background.jpg);
-}
-
-html.ios-fixed-bg-enabled .ios-fixed-bg--testimonials {
-   background-image: url(../images/testimonials.jpg);
-}
-
-html.ios-fixed-bg-enabled header,
-html.ios-fixed-bg-enabled #testimonials {
-   background-image: none !important;
-   background-attachment: scroll;
-}
-
-html.ios-fixed-bg-enabled header::after,
-html.ios-fixed-bg-enabled #testimonials:before {
-   z-index: 1;
-}
-
-html.ios-fixed-bg-enabled header .banner,
-html.ios-fixed-bg-enabled header .banner-text,
-html.ios-fixed-bg-enabled header .scrolldown,
-html.ios-fixed-bg-enabled #testimonials .text-container {
-   position: relative;
-   z-index: 2;
 }
 
 /* vertically center banner section */
@@ -928,14 +883,6 @@ call-to-action .button {
    pointer-events: none;
 }
 
-/* iOS Safari specific fix: background-attachment: fixed has rendering glitches.
-   Limit the change to iPhone/iPad only by targeting a WebKit+iOS-only feature. */
-@supports (-webkit-overflow-scrolling: touch) {
-  #testimonials {
-    background-attachment: scroll; /* fallback on iOS to avoid artifacts */
-    background-position: center center;
-  }
-}
 #testimonials .text-container {
    position: relative;
    z-index: 1;

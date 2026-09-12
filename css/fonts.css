@@ -151,19 +151,5 @@
 }
 
 
-/*
- * FIXED for Font-Face Chrome Rendering
-================================================================================ */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-
-   @font-face {
-   font-family: 'opensans-semibold';
-   src: url('fonts/opensans/OpenSans-Semibold-webfont.svg#open_sanssemibold') format('svg');
-   }
-
-   @font-face {
-   font-family: 'opensans-bold';
-   src: url('fonts/opensans/OpenSans-Bold-webfont.svg#open_sansbold') format('svg');
-   }
-
-}
+/* Use the WOFF-first sources above in every engine. The old WebKit media
+   query forced Safari onto SVG fonts while Chromium used WOFF. */

@@ -120,6 +120,10 @@
    #nav-wrap {
       font: 12px 'opensans-bold', sans-serif;
       background: transparent !important;
+      /* Blur only belongs to a visible panel, not this full-width touch wrapper. */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-bottom: 0;
       letter-spacing: 1.5px;  
       width: auto;
       position: fixed;
@@ -166,6 +170,10 @@
    /* hide menu panel */
    #nav-wrap ul#nav {
       height: auto;
+      max-height: calc(100vh - 90px);
+      max-height: calc(100dvh - 90px - env(safe-area-inset-bottom, 0px));
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
 		display: none;
       clear: both;
       width: auto; 
@@ -210,7 +218,6 @@
    /* Header Styles
    -------------------------------------------------------------------- */
    header {
-      height: 720px;
       background-position: center center;
    }
    header .banner {
@@ -447,14 +454,22 @@
 
 }
 
-/* iOS Safari specific fixes */
+/* Keep touch-device backgrounds on their sections, beneath the existing overlays.
+   Avoid fixed/clipped viewport layers, including on iPad and in landscape.
+   CSS alone also keeps the images visible before scripts run. */
+@media (hover: none) and (pointer: coarse) {
+   header,
+   #testimonials {
+      background-attachment: scroll;
+      background-position: center center;
+   }
+}
+
+/* Also cover iPadOS with an attached mouse or trackpad. */
 @supports (-webkit-touch-callout: none) {
-   @media only screen and (max-width: 767px) {
-      header {
-         background-attachment: scroll;
-         background-position: center center;
-         background-size: auto 100% !important;
-              -webkit-background-size: auto 100% !important;
-      }
+   header,
+   #testimonials {
+      background-attachment: scroll;
+      background-position: center center;
    }
 }
