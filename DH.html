@@ -4,83 +4,99 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
-  <title>DH · ECDH Key Exchange</title>
+    content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'" />
+  <title>DH · Verified Ephemeral Encryption</title>
   <link rel="icon" href="favicon.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="wrap">
-    <div id="compat-warning" class="card" style="display:none">
-      <strong class="warn">Note:</strong> This environment seems to lack WebCrypto SubtleCrypto. Use a modern browser
-      and open this page via a local HTTP server (e.g., <span class="mono">python -m http.server</span>).
+  <main class="wrap">
+    <noscript>
+      <div class="card"><strong class="warn">JavaScript is required.</strong> Encryption is disabled. Use a trusted,
+        up-to-date browser on HTTPS or a local server bound to localhost.</div>
+    </noscript>
+    <div id="compat-warning" class="card" role="alert" hidden>
+      <strong class="warn">Unsupported environment.</strong> Use an up-to-date browser with WebCrypto on HTTPS or a
+      localhost / loopback HTTP server. Opening this file directly or using ordinary HTTP is not supported.
     </div>
 
-    <div class="card">
-      <h1>DH Key Exchange</h1>
-      <div class="muted">Algorithms: ECDH over NIST P-256 (secp256r1) to derive a 256-bit AES-GCM key (no HKDF). IV =
-        96-bit random. Ciphertext JSON { v, alg, iv, ct } with base64 fields. Key fingerprint = SHA-256 of raw AES key.
-      </div>
-    </div>
+    <section class="card" aria-labelledby="page-title">
+      <h1 id="page-title">Verified Ephemeral Encryption</h1>
+      <p class="muted">Exchange handshake text, then compare the complete safety code through an independent trusted
+        channel, such as an in-person conversation. Both people must verify before exchanging encrypted messages.</p>
+      <p class="muted">Keys stay in this page's memory. Refreshing, leaving, ending, or changing a session permanently
+        loses access to its messages. Sessions expire one hour after generating your handshake; switching tabs is safe.</p>
+      <p class="footer">P-256 · HKDF-SHA-256 · AES-256-GCM. This custom protocol has not received an independent security
+        audit or certification and is not post-quantum secure. <a href="DH-SECURITY.md">Security and deployment guide</a></p>
+      <p><strong>Session:</strong> <span id="sessionState" data-id="sessionState" role="status" aria-live="polite">Not generated</span>
+        <span class="muted"> · Expires: <span id="expiresAt" data-id="expiresAt">—</span></span></p>
+      <div class="btns"><button id="resetBtn" data-id="resetBtn" type="button" class="danger">End and clear everything</button></div>
+    </section>
 
-    <div class="card grid">
-      <h2>Step 1: My Key Pair</h2>
+    <section class="card grid" aria-labelledby="exchange-title">
+      <h2 id="exchange-title">1. Exchange handshakes</h2>
       <div class="btns">
-        <button data-id="genBtn">Generate My Key Pair</button>
-        <button data-id="copyMyPub" class="secondary" disabled>Copy Public Key</button>
+        <button id="genBtn" data-id="genBtn" type="button" disabled>Generate a new handshake</button>
+        <button id="copyMyPub" data-id="copyMyPub" type="button" class="secondary" disabled>Copy my handshake</button>
       </div>
-      <label>My Public Key (send to peer):</label>
-      <textarea data-id="myPub" class="mono" readonly autocomplete="off" autocapitalize="none" autocorrect="off"
-        spellcheck="false"></textarea>
-      <label>Private Key JWK (keep secret; paste here to import):</label>
-      <textarea data-id="privJwk" class="mono" data-sanitize
-        placeholder='{"kty":"EC","crv":"P-256","d":"...","x":"...","y":"..."}' autocomplete="off" autocapitalize="none"
-        autocorrect="off" spellcheck="false"></textarea>
-      <div class="btns"><button data-id="importPrivBtn" class="success">Import Private Key</button></div>
-      <div class="footer" data-id="importStatus"></div>
-    </div>
-
-    <div class="card grid">
-      <h2>Step 2: Establish Session Key</h2>
-      <label>Peer Public Key (JWK JSON):</label>
-      <textarea data-id="peerPub" class="mono" data-sanitize
-        placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"..."}' autocomplete="off" autocapitalize="none"
-        autocorrect="off" spellcheck="false"></textarea>
+      <label for="myPub">My handshake — send all of this to the other person</label>
+      <textarea id="myPub" data-id="myPub" class="mono" readonly autocomplete="off" autocapitalize="none" autocorrect="off"
+        spellcheck="false" aria-describedby="handshake-help"></textarea>
+      <label for="peerPub">The other person's handshake</label>
+      <textarea id="peerPub" data-id="peerPub" class="mono" placeholder="Paste their complete v2 handshake JSON"
+        autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="handshake-help"></textarea>
+      <p id="handshake-help" class="footer">Use one new handshake per session. Changing the other person's handshake
+        ends the current session. Old v1 messages and JWK key exports are not supported.</p>
       <div class="btns">
-        <button data-id="buildSessionBtn" class="success" disabled>Establish Session Key</button>
+        <button id="buildSessionBtn" data-id="buildSessionBtn" type="button" class="success" disabled>Establish session</button>
       </div>
-      <label>Session Key Fingerprint (SHA-256): <span class="pill">Verify both sides match</span></label>
-      <input data-id="fingerprint" class="mono" type="text" readonly />
-    </div>
+    </section>
 
-    <div class="card grid">
-      <h2>Step 3: Encrypt / Decrypt</h2>
+    <section class="card grid" aria-labelledby="verify-title">
+      <h2 id="verify-title">2. Verify the complete safety code</h2>
+      <label for="fingerprint">Safety code — compare all 64 hexadecimal characters on both devices</label>
+      <textarea id="fingerprint" data-id="fingerprint" class="mono safety-code" readonly rows="2" autocomplete="off"
+        autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="verification-help"></textarea>
+      <p id="verification-help" class="muted">Contact the person through a separate channel you already trust. Compare
+        every group, in order. A matching code identifies this session only. If any character differs, end the session.</p>
+      <label for="verifyCheck" class="check-label"><input id="verifyCheck" data-id="verifyCheck" type="checkbox" disabled />
+        I compared every character through an independent trusted channel, and both complete codes match.</label>
+      <div class="btns">
+        <button id="confirmBtn" data-id="confirmBtn" type="button" class="success" disabled>Confirm verified code</button>
+        <button id="mismatchBtn" data-id="mismatchBtn" type="button" class="danger" disabled>Codes differ — end session</button>
+      </div>
+    </section>
+
+    <section class="card grid" aria-labelledby="message-title">
+      <h2 id="message-title">3. Exchange encrypted messages</h2>
       <div class="row">
         <div class="col">
-          <label>Plaintext:</label>
-          <textarea data-id="plain" data-sanitize placeholder="Enter text to encrypt" autocomplete="off"
-            autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
+          <label for="plain">Plaintext</label>
+          <textarea id="plain" data-id="plain" placeholder="Enter text to encrypt; received plaintext also appears here"
+            autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="message-help"></textarea>
           <div class="btns">
-            <button data-id="encryptBtn" disabled>Encrypt -></button>
+            <button id="encryptBtn" data-id="encryptBtn" type="button" disabled>Encrypt →</button>
           </div>
         </div>
         <div class="col">
-          <label>Ciphertext (JSON, share with peer):</label>
-          <textarea data-id="cipher" class="mono" data-sanitize
-            placeholder='{"v":1,"alg":"ECDH-P256/AES-GCM-256","iv":"...","ct":"..."}' autocomplete="off"
-            autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
+          <label for="cipher">Ciphertext — send or paste the complete JSON</label>
+          <textarea id="cipher" data-id="cipher" class="mono" placeholder="Encrypted v2 message JSON"
+            autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="message-help"></textarea>
           <div class="btns">
-            <button data-id="decryptBtn" class="secondary" disabled><- Decrypt</button>
+            <button id="decryptBtn" data-id="decryptBtn" type="button" class="secondary" disabled>← Decrypt</button>
+            <button id="copyCipher" data-id="copyCipher" type="button" class="secondary" disabled>Copy ciphertext</button>
           </div>
         </div>
       </div>
-      <div class="footer" data-id="status"></div>
-    </div>
-
-  </div>
-
+      <p id="message-help" class="footer">Maximum: 1 MiB of UTF-8 plaintext per message; 65,536 messages and 64 MiB per
+        direction in a session. Messages may arrive out of order within the latest 128 sequence positions. Duplicate or
+        older messages are rejected. A failed decryption clears the plaintext field.</p>
+      <p id="status" data-id="status" class="footer" role="status" aria-live="polite" aria-atomic="true">Checking secure environment…</p>
+    </section>
+  </main>
   <script src="js/dh.js"></script>
 </body>
 

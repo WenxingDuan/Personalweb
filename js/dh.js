@@ -1,245 +1,414 @@
-// ECDH (P-256) + AES-GCM demo helpers
-// Demo only. Do not use as-is for production.
+'use strict';
 
+// DH v2: see DH-SECURITY.md for the wire format, trust assumptions and limits.
 const DH = (() => {
-  const curve = 'P-256';
-  const algoECDH = { name: 'ECDH', namedCurve: curve };
+  const constants = Object.freeze({
+    SUITE: 'P256-HKDF-SHA256-A256GCM', MAX_OFFER: 4096,
+    MAX_PLAIN: 1024 * 1024, MAX_CIPHER: 1.5 * 1024 * 1024,
+    MAX_MESSAGES: 65536, MAX_BYTES: 64 * 1024 * 1024, TTL: 3600000, WINDOW: 128
+  });
+  const { SUITE, MAX_OFFER, MAX_PLAIN, MAX_CIPHER, MAX_MESSAGES, MAX_BYTES, TTL, WINDOW } = constants;
+  const ec = { name: 'ECDH', namedCurve: 'P-256' };
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
+  const encode = value => encoder.encode(JSON.stringify(value));
+  const hex = bytes => Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  const mask = (1n << BigInt(WINDOW)) - 1n;
 
-  const textEncoder = new TextEncoder();
-  const textDecoder = new TextDecoder();
-
-  // Utils
-  const bufToB64 = (buf) => {
-    const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-    let bin = '';
-    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-  };
-
-  const b64ToBuf = (b64) => {
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes.buffer;
-  };
-
-  const hex = (buf) => Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  const sha256 = async (buf) => crypto.subtle.digest('SHA-256', buf);
-
-  // Keys
-  async function generateKeyPair() {
-    return crypto.subtle.generateKey(algoECDH, true, ['deriveKey','deriveBits']);
+  function base64url(bytes) {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += 8192) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
-  async function exportPublicJwk(publicKey) {
-    const jwk = await crypto.subtle.exportKey('jwk', publicKey);
-    return { kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y, ext: true };
+  function decode64(value, min, max = min) {
+    if (typeof value !== 'string' || value.length > Math.ceil(max * 4 / 3) ||
+        !/^[A-Za-z0-9_-]+$/.test(value)) throw new Error('Invalid Base64url encoding.');
+    let bytes;
+    try {
+      bytes = Uint8Array.from(atob(value.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    } catch { throw new Error('Invalid Base64url encoding.'); }
+    if (bytes.length < min || bytes.length > max || base64url(bytes) !== value) {
+      throw new Error('Invalid encoded length or noncanonical Base64url.');
+    }
+    return bytes;
   }
 
-  async function exportPrivateJwk(privateKey, publicKey) {
-    const priv = await crypto.subtle.exportKey('jwk', privateKey);
-    let pub;
-    try { pub = await crypto.subtle.exportKey('jwk', publicKey); } catch { pub = {}; }
-    return {
-      kty: priv.kty,
-      crv: priv.crv || 'P-256',
-      d: priv.d,
-      x: priv.x || pub.x,
-      y: priv.y || pub.y,
-      ext: true,
-      key_ops: ['deriveKey','deriveBits']
+  function parse(text, max, fields) {
+    if (typeof text !== 'string' || text.length > max || encoder.encode(text).length > max) {
+      throw new Error('Input exceeds the size limit.');
+    }
+    let value;
+    try { value = JSON.parse(text); } catch { throw new Error('Input is not valid JSON.'); }
+    if (!value || Array.isArray(value) || typeof value !== 'object' ||
+        Object.keys(value).length !== fields.length || fields.some(key => !Object.hasOwn(value, key))) {
+      throw new Error('Unexpected protocol fields.');
+    }
+    if (value.v !== 2 || value.suite !== SUITE) throw new Error('Only the DH v2 suite is supported.');
+    return value;
+  }
+
+  function supportedOrigin(location, secure) {
+    return secure === true && (location.protocol === 'https:' ||
+      (location.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)));
+  }
+
+  async function createOffer() {
+    const started = Date.now(), monotonic = performance.now();
+    const expiresAt = started + TTL;
+    const expired = () => Date.now() >= expiresAt || performance.now() - monotonic >= TTL;
+    let pair = await crypto.subtle.generateKey(ec, false, ['deriveBits']);
+    let privateKey = pair.privateKey;
+    const pub = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
+    pair = null;
+    const offer = { v: 2, suite: SUITE, pub: base64url(pub), nonce: base64url(crypto.getRandomValues(new Uint8Array(32))) };
+    let consumed = false, destroyed = false;
+    const destroy = () => { destroyed = true; privateKey = null; };
+    const assertAlive = () => {
+      if (destroyed || expired()) { destroy(); throw new Error('Handshake ended or expired. Generate a new one.'); }
     };
-  }
+    assertAlive();
 
-  async function importPeerPublicJwk(jwk) {
-    if (!jwk || jwk.kty !== 'EC') throw new Error('Invalid JWK public key');
-    return crypto.subtle.importKey('jwk', jwk, algoECDH, true, []);
-  }
-
-  async function importPrivateJwk(jwk) {
-    if (!jwk || jwk.kty !== 'EC' || !jwk.d) throw new Error('Invalid JWK private key (must include d)');
-    const priv = await crypto.subtle.importKey('jwk', { ...jwk, key_ops:['deriveKey','deriveBits'] }, algoECDH, true, ['deriveKey','deriveBits']);
-    let pub = null;
-    if (jwk.x && jwk.y) {
-      pub = await crypto.subtle.importKey('jwk', { kty:'EC', crv: jwk.crv || 'P-256', x: jwk.x, y: jwk.y, ext:true }, algoECDH, true, []);
-    }
-    return { privateKey: priv, publicKey: pub };
-  }
-
-  async function deriveAesKey(myPrivateKey, peerPublicKey) {
-    return crypto.subtle.deriveKey({ name:'ECDH', public: peerPublicKey }, myPrivateKey, { name:'AES-GCM', length:256 }, true, ['encrypt','decrypt']);
-  }
-
-  // Crypto
-  async function encrypt(aesKey, plaintext) {
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const data = textEncoder.encode(plaintext);
-    const ctBuf = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, aesKey, data);
-    return { v:1, alg:'ECDH-P256/AES-GCM-256', iv: bufToB64(iv), ct: bufToB64(ctBuf) };
-  }
-
-  async function decrypt(aesKey, payload) {
-    if (!payload || typeof payload !== 'object') throw new Error('Invalid ciphertext format');
-    const iv = new Uint8Array(b64ToBuf(payload.iv));
-    const ctBuf = b64ToBuf(payload.ct);
-    const ptBuf = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, aesKey, ctBuf);
-    return textDecoder.decode(ptBuf);
-  }
-
-  async function keyFingerprint(aesKey) {
-    const raw = await crypto.subtle.exportKey('raw', aesKey);
-    const h = await sha256(raw);
-    return hex(h);
-  }
-
-  return { generateKeyPair, exportPublicJwk, exportPrivateJwk, importPeerPublicJwk, importPrivateJwk, deriveAesKey, encrypt, decrypt, keyFingerprint };
-})();
-
-// Single-page wiring (DH.html)
-function setupPage() {
-  const els = Object.fromEntries(Array.from(document.querySelectorAll('[data-id]')).map(e=>[e.dataset.id,e]));
-
-  let myKeys = /** @type {CryptoKeyPair|null} */(null);
-  let sessionKey = /** @type {CryptoKey|null} */(null);
-
-  function setStatus(msg, cls=''){
-    els.status.textContent = msg;
-    els.status.className = `muted ${cls}`.trim();
-  }
-
-  function setImportStatus(msg, cls=''){
-    if (!els.importStatus) return;
-    els.importStatus.textContent = msg;
-    els.importStatus.className = `footer muted ${cls}`.trim();
-  }
-
-  function enableSession(enabled){
-    els.encryptBtn.disabled = !enabled;
-    els.decryptBtn.disabled = !enabled;
-  }
-
-  function enableAfterKeys(enabled){
-    els.copyMyPub.disabled = !enabled;
-    els.peerPub.disabled = !enabled;
-    els.buildSessionBtn.disabled = !enabled;
-  }
-
-  // Input sanitization (strip most control chars, but KEEP tabs/newlines)
-  // Removes: U+0000–0008, 000B–000C, 000E–001F, 007F
-  // Keeps: \t (U+0009), \n (U+000A), \r (U+000D)
-  const sanitize = (s) => (s ?? '').toString().replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F\u007F]/g, '');
-  document.querySelectorAll('[data-sanitize]').forEach((el) => {
-    el.addEventListener('input', () => { el.value = sanitize(el.value); });
-    el.addEventListener('paste', () => { setTimeout(()=>{ el.value = sanitize(el.value); }, 0); });
-  });
-
-  // Generate key pair
-  els.genBtn.addEventListener('click', async ()=>{
-    try{
-      setStatus('Generating key pair...');
-      myKeys = await DH.generateKeyPair();
-      const pubJwk = await DH.exportPublicJwk(myKeys.publicKey);
-      const privJwk = await DH.exportPrivateJwk(myKeys.privateKey, myKeys.publicKey);
-      els.myPub.value = JSON.stringify(pubJwk, null, 2);
-      if (els.privJwk) els.privJwk.value = JSON.stringify(privJwk, null, 2);
-      enableAfterKeys(true);
-      setStatus('Key pair generated. Share your public key; keep private key secret.', 'ok');
-    }catch(err){
-      console.error(err);
-      setStatus('Generation failed: ' + err.message, 'err');
-    }
-  });
-
-  // Copy public key
-  els.copyMyPub.addEventListener('click', async ()=>{
-    try{
-      await navigator.clipboard.writeText(els.myPub.value.trim());
-      setStatus('Public key copied.', 'ok');
-    }catch{
-      setStatus('Copy failed, please copy manually.', 'warn');
-    }
-  });
-
-  // Import private key
-  if (els.importPrivBtn) {
-    els.importPrivBtn.addEventListener('click', async ()=>{
-      try{
-        const src = (els.privJwk ? els.privJwk.value : '').trim();
-        if (!src) throw new Error('Paste a private key JWK');
-        let jwk;
-        try { jwk = JSON.parse(src); } catch { throw new Error('Private key is not valid JSON'); }
-        const pair = await DH.importPrivateJwk(jwk);
-        if (!pair.publicKey) throw new Error('Private JWK missing x/y; include public coordinates');
-        myKeys = { privateKey: pair.privateKey, publicKey: pair.publicKey };
-        const pubJwk = await DH.exportPublicJwk(myKeys.publicKey);
-        const privJwk = await DH.exportPrivateJwk(myKeys.privateKey, myKeys.publicKey);
-        els.myPub.value = JSON.stringify(pubJwk, null, 2);
-        if (els.privJwk) els.privJwk.value = JSON.stringify(privJwk, null, 2);
-        enableAfterKeys(true);
-        setStatus('Private key imported. Public key restored from JWK.', 'ok');
-        setImportStatus('Private key imported successfully.', 'ok');
-      }catch(err){
-        console.error(err);
-        setStatus('Import failed: ' + err.message, 'err');
-        setImportStatus('Import failed: ' + err.message, 'err');
+    return Object.freeze({
+      text: JSON.stringify(offer, null, 2), expiresAt,
+      get active() { if (expired()) destroy(); return !destroyed && !consumed; },
+      destroy,
+      async establish(peerText) {
+        assertAlive();
+        if (consumed) throw new Error('This handshake has already been used. Generate a new one.');
+        // Consume before any await, including failed attempts; never reset a nonce under the same key.
+        consumed = true;
+        let secret = null, material = null, verification = null, ownPrivate = privateKey;
+        privateKey = null;
+        try {
+          const peer = parse(peerText, MAX_OFFER, ['v', 'suite', 'pub', 'nonce']);
+          const peerBytes = decode64(peer.pub, 65);
+          decode64(peer.nonce, 32);
+          if (peerBytes[0] !== 4 || peer.pub === offer.pub) throw new Error('Invalid or identical peer public key.');
+          const peerKey = await crypto.subtle.importKey('raw', peerBytes, ec, false, []);
+          assertAlive();
+          // Byte ordering, never locale-dependent string ordering.
+          const different = pub.findIndex((b, i) => b !== peerBytes[i]);
+          const from = pub[different] < peerBytes[different] ? 'a' : 'b';
+          const [a, b] = from === 'a' ? [offer, peer] : [peer, offer];
+          const transcript = encode(['DH-v2', SUITE, [a.pub, a.nonce], [b.pub, b.nonce]]);
+          const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', transcript));
+          assertAlive();
+          secret = new Uint8Array(await crypto.subtle.deriveBits({ name: 'ECDH', public: peerKey }, ownPrivate, 256));
+          ownPrivate = null;
+          assertAlive();
+          material = await crypto.subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey', 'deriveBits']);
+          secret.fill(0);
+          assertAlive();
+          const params = label => ({ name: 'HKDF', hash: 'SHA-256', salt: hash, info: encoder.encode('DH-v2/' + label) });
+          const key = (label, usage) => crypto.subtle.deriveKey(params(label), material,
+            { name: 'AES-GCM', length: 256 }, false, [usage]);
+          const tx = await key(from === 'a' ? 'a-to-b' : 'b-to-a', 'encrypt');
+          assertAlive();
+          const rx = await key(from === 'a' ? 'b-to-a' : 'a-to-b', 'decrypt');
+          assertAlive();
+          verification = new Uint8Array(await crypto.subtle.deriveBits(params('verify'), material, 256));
+          assertAlive();
+          return createSession(tx, rx, from, base64url(hash), hex(verification), expiresAt, expired);
+        } finally {
+          ownPrivate = null;
+          material = null;
+          if (secret) secret.fill(0);
+          if (verification) verification.fill(0);
+        }
       }
     });
   }
 
-  // Establish session
-  els.buildSessionBtn.addEventListener('click', async ()=>{
-    try{
-      if (!myKeys) throw new Error('Generate or import your key pair first');
-      const peerStr = els.peerPub.value.trim();
-      if (!peerStr) throw new Error('Paste peer public key (JWK JSON)');
-      let jwk;
-      try { jwk = JSON.parse(peerStr); } catch { throw new Error('Peer public key is not valid JSON'); }
-      const peerPub = await DH.importPeerPublicJwk(jwk);
-      sessionKey = await DH.deriveAesKey(myKeys.privateKey, peerPub);
-      els.fingerprint.value = await DH.keyFingerprint(sessionKey);
-      enableSession(true);
-      setStatus('Session key established. Verify fingerprints match on both sides.', 'ok');
-    }catch(err){
-      console.error(err);
-      setStatus('Establish failed: ' + err.message, 'err');
+  function createSession(tx, rx, from, sid, safetyCode, expiresAt, expired) {
+    let verified = false, nextSeq = 0, txBytes = 0, rxBytes = 0, rxCount = 0;
+    let highest = -1, received = 0n;
+    const peer = from === 'a' ? 'b' : 'a';
+    const destroy = () => { tx = null; rx = null; verified = false; received = 0n; };
+    const active = () => { if (expired()) destroy(); return tx !== null && rx !== null; };
+    const requireActive = () => { if (!active()) throw new Error('Session ended or expired. Start a new handshake.'); };
+    const requireVerified = () => {
+      requireActive();
+      if (!verified) throw new Error('Verify the entire safety code through an independent trusted channel first.');
+    };
+    const quota = (count, bytes) => {
+      if (count >= MAX_MESSAGES || bytes > MAX_BYTES) {
+        destroy(); throw new Error('Session limit reached. Start a new handshake.');
+      }
+    };
+    const fresh = seq => {
+      const offset = highest - seq;
+      if (offset >= WINDOW || (offset >= 0 && (received & (1n << BigInt(offset))) !== 0n)) {
+        throw new Error('Duplicate or too-old message.');
+      }
+    };
+    const accept = seq => {
+      if (seq > highest) {
+        const advance = seq - highest;
+        received = advance >= WINDOW ? 1n : ((received << BigInt(advance)) | 1n) & mask;
+        highest = seq;
+      } else { received |= 1n << BigInt(highest - seq); }
+    };
+    const algorithm = (sender, seq) => {
+      const iv = new Uint8Array(12);
+      new DataView(iv.buffer).setBigUint64(4, BigInt(seq), false);
+      return { name: 'AES-GCM', iv, tagLength: 128, additionalData: encode([2, SUITE, sid, sender, seq]) };
+    };
+
+    return Object.freeze({
+      sid, safetyCode, expiresAt,
+      get active() { return active(); },
+      get verified() { return active() && verified; },
+      confirm() { requireActive(); verified = true; },
+      destroy,
+      async encrypt(plaintext) {
+        requireVerified();
+        if (typeof plaintext !== 'string' || plaintext.length > MAX_PLAIN) throw new Error('Plaintext exceeds 1 MiB.');
+        const data = encoder.encode(plaintext);
+        try {
+          if (data.length > MAX_PLAIN) throw new Error('Plaintext exceeds 1 MiB in UTF-8.');
+          if (decoder.decode(data) !== plaintext) throw new Error('Plaintext contains an unpaired Unicode surrogate.');
+          quota(nextSeq, txBytes + data.length);
+          // Reserve synchronously. Failed operations consume both sequence and byte budget.
+          const seq = nextSeq++;
+          txBytes += data.length;
+          const encrypted = await crypto.subtle.encrypt(algorithm(from, seq), tx, data);
+          requireVerified();
+          return JSON.stringify({ v: 2, suite: SUITE, sid, from, seq, ct: base64url(new Uint8Array(encrypted)) });
+        } finally { data.fill(0); }
+      },
+      async decrypt(ciphertext) {
+        requireVerified();
+        const value = parse(ciphertext, MAX_CIPHER, ['v', 'suite', 'sid', 'from', 'seq', 'ct']);
+        if (value.sid !== sid || value.from !== peer) throw new Error('Wrong session or message direction.');
+        if (!Number.isSafeInteger(value.seq) || Object.is(value.seq, -0) || value.seq < 0 || value.seq >= MAX_MESSAGES) {
+          throw new Error('Invalid message sequence.');
+        }
+        const ct = decode64(value.ct, 16, MAX_PLAIN + 16);
+        fresh(value.seq);
+        let plaintext;
+        try {
+          plaintext = new Uint8Array(await crypto.subtle.decrypt(algorithm(value.from, value.seq), rx, ct));
+        } catch { throw new Error('Message authentication failed.'); }
+        try {
+          requireVerified();
+          // Authentication can complete out of order: recheck and commit without an await.
+          fresh(value.seq);
+          quota(rxCount, rxBytes + plaintext.length);
+          const text = decoder.decode(plaintext);
+          accept(value.seq);
+          rxCount++;
+          rxBytes += plaintext.length;
+          return text;
+        } finally { plaintext.fill(0); }
+      }
+    });
+  }
+
+  async function checkCapabilities() {
+    let a, b, sa, sb;
+    try {
+      a = await createOffer(); b = await createOffer();
+      sa = await a.establish(b.text); sb = await b.establish(a.text);
+      if (sa.safetyCode !== sb.safetyCode) throw new Error('Crypto self-check failed.');
+      sa.confirm(); sb.confirm();
+      if (await sb.decrypt(await sa.encrypt('')) !== '') throw new Error('Crypto self-check failed.');
+    } finally {
+      a?.destroy(); b?.destroy(); sa?.destroy(); sb?.destroy();
+    }
+  }
+
+  return Object.freeze({ constants, createOffer, supportedOrigin, checkCapabilities });
+})();
+
+function setupPage() {
+  const els = Object.fromEntries(Array.from(document.querySelectorAll('[data-id]'), e => [e.dataset.id, e]));
+  let local = null, session = null, epoch = 0, busy = false, ready = false, timer = null;
+  let capabilityCheck = null, suspended = false;
+  let stage = 'Not started';
+  const setStatus = (message, kind = '') => {
+    els.status.textContent = message;
+    els.status.className = 'footer ' + kind;
+  };
+  function render() {
+    const verified = !!session?.verified;
+    const usable = ready && !suspended;
+    els.sessionState.textContent = stage;
+    els.genBtn.disabled = !usable || busy;
+    els.copyMyPub.disabled = !usable || !els.myPub.value;
+    els.peerPub.disabled = !usable || !els.myPub.value;
+    els.buildSessionBtn.disabled = !usable || busy || !local?.active;
+    els.verifyCheck.disabled = !usable || busy || !session?.active || verified;
+    els.confirmBtn.disabled = els.verifyCheck.disabled || !els.verifyCheck.checked;
+    els.mismatchBtn.disabled = !session?.active;
+    els.plain.disabled = els.cipher.disabled = !verified || busy;
+    els.encryptBtn.disabled = els.decryptBtn.disabled = !verified || busy;
+    els.copyCipher.disabled = !verified || busy || !els.cipher.value;
+    const expires = session?.expiresAt || local?.expiresAt;
+    els.expiresAt.textContent = expires ? new Date(expires).toLocaleTimeString() : '—';
+  }
+  function observeCapabilities() {
+    const operation = epoch;
+    capabilityCheck.then(() => {
+      if (operation !== epoch || suspended) return;
+      ready = true; render();
+    }).catch(() => {
+      if (operation !== epoch || suspended) return;
+      document.getElementById('compat-warning').hidden = false;
+      setStatus('Required cryptographic capabilities are unavailable. No insecure fallback is provided.', 'err');
+    });
+  }
+  function clearMessages() {
+    els.plain.value = els.cipher.value = els.fingerprint.value = '';
+    els.verifyCheck.checked = false;
+  }
+  function reset(message = 'Session ended and cleared. Generate a fresh handshake to continue.') {
+    ++epoch;
+    local?.destroy(); session?.destroy();
+    local = session = null;
+    clearTimeout(timer); timer = null;
+    busy = false;
+    clearMessages();
+    els.myPub.value = els.peerPub.value = '';
+    stage = 'Ended';
+    setStatus(message);
+    render();
+    // A new page generation may observe the same capability result, never an old callback.
+    if (capabilityCheck && !ready && !suspended) observeCapabilities();
+  }
+  function expireIfNeeded() {
+    if ((session && !session.active) || (local && !busy && !local.active)) {
+      reset('Session ended or expired. Generate a fresh handshake.');
+      return true;
+    }
+    return false;
+  }
+
+  els.resetBtn.addEventListener('click', () => reset());
+  els.mismatchBtn.addEventListener('click', () => reset('Safety codes do not match. Session ended; do not exchange sensitive messages.'));
+  els.genBtn.addEventListener('click', async () => {
+    if (!ready || suspended || busy) return;
+    reset('Generating a fresh handshake...');
+    const operation = epoch;
+    busy = true; stage = 'Generating'; render();
+    try {
+      const result = await DH.createOffer();
+      if (operation !== epoch) { result.destroy(); return; }
+      local = result;
+      els.myPub.value = local.text;
+      stage = 'Waiting for peer';
+      setStatus('Send your handshake to your peer, then paste theirs. Private keys stay in this page.');
+      timer = setTimeout(() => {
+        if (operation === epoch) reset('One-hour lifetime reached. Generate a fresh handshake.');
+      }, Math.max(0, local.expiresAt - Date.now()));
+    } catch {
+      if (operation === epoch) { stage = 'Ended'; setStatus('Could not generate a handshake.', 'err'); }
+    } finally {
+      if (operation === epoch) { busy = false; render(); }
     }
   });
 
-  // Encrypt
-  els.encryptBtn.addEventListener('click', async ()=>{
-    try{
-      if (!sessionKey) throw new Error('Session key is not established');
-      const payload = await DH.encrypt(sessionKey, els.plain.value);
-      els.cipher.value = JSON.stringify(payload);
-      setStatus('Encryption succeeded. Ciphertext ready.', 'ok');
-    }catch(err){
-      console.error(err);
-      setStatus('Encryption failed: ' + err.message, 'err');
+  els.peerPub.addEventListener('input', () => {
+    if (suspended) return;
+    ++epoch;
+    session?.destroy(); session = null;
+    // An unconsumed offer can still be used. A consumed/pending one must be replaced.
+    if (local && !local.active) { local.destroy(); local = null; }
+    busy = false;
+    clearMessages();
+    clearTimeout(timer); timer = null;
+    if (local) {
+      const operation = epoch;
+      timer = setTimeout(() => {
+        if (operation === epoch) reset('One-hour lifetime reached. Generate a fresh handshake.');
+      }, Math.max(0, local.expiresAt - Date.now()));
+    } else { els.myPub.value = ''; }
+    stage = local ? 'Waiting for peer' : 'Ended';
+    setStatus(local ? 'Peer handshake changed. Establish and verify a session before messaging.' :
+      'Previous session ended. Generate and exchange fresh handshakes.');
+    render();
+  });
+
+  els.buildSessionBtn.addEventListener('click', async () => {
+    if (!ready || suspended || busy || !local?.active) return;
+    const operation = epoch;
+    busy = true; stage = 'Establishing'; clearMessages(); render();
+    try {
+      const result = await local.establish(els.peerPub.value);
+      if (operation !== epoch) { result.destroy(); return; }
+      local = null; session = result;
+      els.fingerprint.value = session.safetyCode.match(/.{8}/g).join(' ');
+      stage = 'Awaiting verification';
+      setStatus('Compare ALL safety-code characters through an independent trusted channel. Messaging is locked.', 'warn');
+    } catch {
+      if (operation === epoch) reset('Handshake failed or expired. Generate and exchange fresh v2 handshakes.');
+    } finally {
+      if (operation === epoch) { busy = false; render(); }
     }
   });
 
-  // Decrypt
-  els.decryptBtn.addEventListener('click', async ()=>{
-    try{
-      if (!sessionKey) throw new Error('Session key is not established');
-      let payload; try { payload = JSON.parse(els.cipher.value.trim()); } catch { throw new Error('Ciphertext is not valid JSON'); }
-      els.plain.value = await DH.decrypt(sessionKey, payload);
-      setStatus('Decryption succeeded.', 'ok');
-    }catch(err){
-      console.error(err);
-      setStatus('Decryption failed: ' + err.message, 'err');
-    }
+  els.verifyCheck.addEventListener('change', render);
+  els.confirmBtn.addEventListener('click', () => {
+    if (busy || !els.verifyCheck.checked || !session || expireIfNeeded()) return;
+    session.confirm();
+    stage = 'Verified';
+    setStatus('Safety code confirmed locally. Your peer must independently verify it too.', 'ok');
+    render();
   });
 
-  // Defaults
-  enableAfterKeys(false);
-  enableSession(false);
+  async function messageOperation(encrypting) {
+    if (busy || expireIfNeeded() || !session?.verified) return;
+    const operation = epoch, current = session;
+    const input = encrypting ? els.plain.value : els.cipher.value;
+    if (encrypting) els.cipher.value = ''; else els.plain.value = '';
+    busy = true; render();
+    setStatus(encrypting ? 'Encrypting...' : 'Authenticating and decrypting...');
+    try {
+      const result = await (encrypting ? current.encrypt(input) : current.decrypt(input));
+      if (operation !== epoch) return;
+      (encrypting ? els.cipher : els.plain).value = result;
+      setStatus(encrypting ? 'Encrypted. Send the ciphertext to your peer.' : 'Authenticated message decrypted.', 'ok');
+    } catch (error) {
+      if (operation === epoch) setStatus(error.message, 'err');
+    } finally {
+      if (operation === epoch) { busy = false; if (!expireIfNeeded()) render(); }
+    }
+  }
+  els.encryptBtn.addEventListener('click', () => messageOperation(true));
+  els.decryptBtn.addEventListener('click', () => messageOperation(false));
+  els.cipher.addEventListener('input', render);
+  for (const [button, field] of [[els.copyMyPub, els.myPub], [els.copyCipher, els.cipher]]) {
+    button.addEventListener('click', async () => {
+      if (button.disabled || expireIfNeeded()) return;
+      const operation = epoch;
+      try {
+        await navigator.clipboard.writeText(field.value);
+        if (operation === epoch) setStatus('Copied.', 'ok');
+      } catch {
+        if (operation === epoch) setStatus('Clipboard unavailable. Select and copy the text manually.', 'warn');
+      }
+    });
+  }
+
+  window.addEventListener('pagehide', () => { suspended = true; reset(); });
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) { suspended = false; reset('Restored page cleared. Start a fresh handshake.'); }
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) expireIfNeeded(); });
+  reset('Generate a fresh handshake to begin.');
+  stage = 'Not started'; render();
+  if (!DH.supportedOrigin(window.location, window.isSecureContext) ||
+      !globalThis.crypto?.subtle || window.top !== window.self) {
+    document.getElementById('compat-warning').hidden = false;
+    setStatus('Unavailable: use a supported browser over HTTPS or loopback HTTP, in a top-level page.', 'err');
+    return;
+  }
+  // Keep every cryptographic control disabled until all required algorithms actually work.
+  capabilityCheck = DH.checkCapabilities();
+  observeCapabilities();
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  if (!window.crypto || !window.crypto.subtle) {
-    const warn = document.getElementById('compat-warning');
-    if (warn) warn.style.display = 'block';
-  }
-  setupPage();
-});
+if (typeof module !== 'undefined' && module.exports) module.exports = { DH, setupPage };
+if (typeof window !== 'undefined') window.addEventListener('DOMContentLoaded', setupPage);
