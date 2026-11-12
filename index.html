@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 
 
 <head>
@@ -25,9 +25,9 @@
     <!-- CSS
     ================================================== -->
     <!-- Load local fonts and icon font in parallel (replaces CSS @import) -->
-    <link rel="preload" as="style" href="css/fonts.css" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="css/fonts.css?v=20261113b" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="css/fonts.css">
+        <link rel="stylesheet" href="css/fonts.css?v=20261113b">
     </noscript>
     <link rel="preload" as="style" href="css/fontello/css/fontello.css" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
@@ -35,17 +35,12 @@
     </noscript>
 
     <link rel="stylesheet" href="css/default.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/media-queries.css">
-    <!-- Defer non-critical popup styles -->
-    <link rel="preload" as="style" href="css/magnific-popup.css" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="css/magnific-popup.css">
-    </noscript>
+    <link rel="stylesheet" href="css/layout.css?v=20261113b">
+    <link rel="stylesheet" href="css/media-queries.css?v=20261113b">
 
     <!-- Script
     ================================================== -->
-    <script src="js/modernizr.js" defer></script>
+    <link rel="preload" as="image" href="images/header-background.webp" type="image/webp" fetchpriority="high">
 
     <!-- Favicons
      ================================================== -->
@@ -54,6 +49,7 @@
 </head>
 
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
     <!-- Header
 ================================================== -->
@@ -61,11 +57,11 @@
 
         <nav id="nav-wrap" aria-label="Main navigation">
 
-            <a class="mobile-btn" href="#nav-wrap" title="Show navigation">Show navigation</a>
-            <a class="mobile-btn" href="#" title="Hide navigation">Hide navigation</a>
+            <button class="mobile-btn" type="button" aria-controls="nav" aria-expanded="false"
+                aria-label="Show navigation">Menu</button>
 
             <ul id="nav" class="nav">
-                <li class="current"><a class="smoothscroll" href="#home">Home</a></li>
+                <li class="current"><a class="smoothscroll" href="#home" aria-current="location">Home</a></li>
                 <li><a class="smoothscroll" href="#about">About</a></li>
                 <li><a class="smoothscroll" href="#resume">Resume</a></li>
                 <li><a class="smoothscroll" href="#portfolio">Photographs</a></li>
@@ -81,17 +77,17 @@
         <div class="row banner">
             <div class="banner-text">
                 <h1 class="responsive-headline">Wenxing Duan</h1>
-                <h3><br>Blockchain, Cyber Security and Privacy PhD Student at
+                <p class="hero-description"><br>Blockchain, Cyber Security and Privacy PhD Student at
                     <br>The Hong Kong Polytechnic University
                     <!-- <br>Research Fellow at ꧁Story꧂ -->
                     <!-- <br>Photographer, Editor, Retoucher, Gamer, Game Photographer, Archer, Xun Player -->
-                </h3>
+                </p>
                 <hr />
                 <ul class="social">
                     <li>
                         <a href="https://github.com/WenxingDuan" aria-label="GitHub" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-github"></i>
+                            <i class="fa-brands fa-github" aria-hidden="true"></i>
                         </a>
                     </li>
 
@@ -104,14 +100,14 @@
                     <li>
                         <a href="https://x.com/WenxingDuan" aria-label="X (Twitter)" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-x-twitter"></i>
+                            <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
                         </a>
                     </li>
 
                     <li>
                         <a href="https://www.linkedin.com/in/wenxingduan/" aria-label="LinkedIn" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-linkedin-in"></i>
+                            <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
                         </a>
                     </li>
 
@@ -119,7 +115,7 @@
                     <li>
                         <a href="https://steamcommunity.com/profiles/76561198347586453/" aria-label="Steam"
                             target="_blank" rel="noopener noreferrer">
-                            <i class="fa-brands fa-steam"></i>
+                            <i class="fa-brands fa-steam" aria-hidden="true"></i>
                         </a>
                     </li>
                 </ul>
@@ -127,7 +123,7 @@
         </div>
 
         <p class="scrolldown">
-            <a class="smoothscroll" href="#about"><i class="icon-down-circle"></i></a>
+            <a class="smoothscroll" href="#about" aria-label="About me"><i class="icon-down-circle" aria-hidden="true"></i></a>
         </p>
 
     </header> <!-- Header End -->
@@ -135,7 +131,8 @@
 
     <!-- About Section
 ================================================== -->
-    <section id="about">
+    <main id="main-content" tabindex="-1">
+    <section id="about" tabindex="-1">
 
         <div class="row">
 
@@ -165,8 +162,7 @@
                         <p class="address">
                             <!-- <span>Maltbarn 15</span><br> -->
                             <!-- <span>Sugarhouse Cl<br> -->
-                            Hong Kong SAR, PRC
-                            </span><br>
+                            <span>Hong Kong SAR, PRC</span><br>
                             <span>+44 (0) 7916114025</span><br>
                             <span>0x.wenxingduan [at] gmail.com</span>
                         </p>
@@ -175,7 +171,7 @@
 
                     <div class="columns download">
                         <p>
-                            <a href="resource/CV_WenxingDuan.pdf" class="button"><i class="fa fa-download"></i>Download
+                            <a href="resource/CV_WenxingDuan.pdf" class="button"><i class="fa fa-download" aria-hidden="true"></i>Download
                                 Resume</a>
                         </p>
                     </div>
@@ -200,13 +196,13 @@
                         <ul class="pgp-tools-list">
                             <li>
                                 <a href="PGPSigner.html">
-                                    <i class="fa-solid fa-pen"></i>
+                                    <i class="fa-solid fa-pen" aria-hidden="true"></i>
                                     PGP Signer
                                 </a>
                             </li>
                             <li>
                                 <a href="PGPVerifier.html">
-                                    <i class="fa-solid fa-check"></i>
+                                    <i class="fa-solid fa-check" aria-hidden="true"></i>
                                     Verify My Signature
                                 </a>
                             </li>
@@ -224,14 +220,14 @@
 
     <!-- Resume Section
 ================================================== -->
-    <section id="resume">
+    <section id="resume" tabindex="-1">
 
         <!-- Education
     ----------------------------------------------- -->
         <div class="row education">
 
             <div class="three columns header-col">
-                <h1><span>Education</span></h1>
+                <h2><span>Education</span></h2>
             </div>
 
             <div class="nine columns main-col">
@@ -281,7 +277,7 @@
         <div class="row work">
 
             <div class="three columns header-col">
-                <h1><span>Work</span></h1>
+                <h2><span>Work</span></h2>
             </div>
 
 
@@ -547,7 +543,7 @@
         <div class="row skill">
 
             <div class="three columns header-col">
-                <h1><span>Skills & Interests</span></h1>
+                <h2><span>Skills & Interests</span></h2>
             </div>
 
             <div class="nine columns main-col">
@@ -568,7 +564,7 @@
         <div class="row Awards">
 
             <div class="three columns header-col">
-                <h1><span>Academic Awards</span></h1>
+                <h2><span>Academic Awards</span></h2>
             </div>
 
             <div class="nine columns main-col">
@@ -676,7 +672,7 @@
             <div class="row Pub">
 
                 <div class="three columns header-col">
-                    <h1><span>Academic Works</span></h1>
+                    <h2><span>Academic Works</span></h2>
                 </div>
 
                 <div class="nine columns main-col">
@@ -754,31 +750,33 @@
 
     <!-- Portfolio Section
 ================================================== -->
-    <section id="portfolio">
+    <section id="portfolio" tabindex="-1">
 
         <div class="row">
 
             <div class="twelve columns collapsed">
 
-                <h1>My Photographs</h1>
+                <h2>My Photographs</h2>
 
                 <div id="portfolio-wrapper" class="bgrid-quarters s-bgrid-thirds cf">
 
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-01" title="View photo: Sunset">
-                                <img src="images/portfolio/psc (1).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 1" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (1).jpg" data-dialog="modal-01"
+                                aria-haspopup="dialog" aria-label="View photo: Sunset">
+                                <img src="images/portfolio/photo-1-480.webp"
+                                    srcset="images/portfolio/photo-1-480.webp 480w, images/portfolio/photo-1-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Sunset</h5>
+                                        <h3 class="photo-title">Sunset</h3>
                                         <p>2019-09-20</p>
                                     </div>
 
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -787,17 +785,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-02" title="View photo: Aurora">
-                                <img src="images/portfolio/psc (2).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 2" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (2).jpg" data-dialog="modal-02"
+                                aria-haspopup="dialog" aria-label="View photo: Aurora">
+                                <img src="images/portfolio/photo-2-480.webp"
+                                    srcset="images/portfolio/photo-2-480.webp 480w, images/portfolio/photo-2-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Aurora</h5>
+                                        <h3 class="photo-title">Aurora</h3>
                                         <p>2024-05-11</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -806,17 +806,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-03" title="View photo: Skyrunner">
-                                <img src="images/portfolio/psc (3).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 3" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (3).jpg" data-dialog="modal-03"
+                                aria-haspopup="dialog" aria-label="View photo: Skyrunner">
+                                <img src="images/portfolio/photo-3-480.webp"
+                                    srcset="images/portfolio/photo-3-480.webp 480w, images/portfolio/photo-3-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Skyrunner</h5>
+                                        <h3 class="photo-title">Skyrunner</h3>
                                         <p>2024-05-11</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -825,17 +827,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-04" title="View photo: Pink Sky">
-                                <img src="images/portfolio/psc (4).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 4" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (4).jpg" data-dialog="modal-04"
+                                aria-haspopup="dialog" aria-label="View photo: Pink Sky">
+                                <img src="images/portfolio/photo-4-480.webp"
+                                    srcset="images/portfolio/photo-4-480.webp 480w, images/portfolio/photo-4-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Pink Sky</h5>
+                                        <h3 class="photo-title">Pink Sky</h3>
                                         <p>2024-01-27</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -844,17 +848,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-05" title="View photo: A Bird">
-                                <img src="images/portfolio/psc (5).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 5" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (5).jpg" data-dialog="modal-05"
+                                aria-haspopup="dialog" aria-label="View photo: A Bird">
+                                <img src="images/portfolio/photo-5-480.webp"
+                                    srcset="images/portfolio/photo-5-480.webp 480w, images/portfolio/photo-5-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>A Bird</h5>
+                                        <h3 class="photo-title">A Bird</h3>
                                         <p>2023-05-28</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -863,17 +869,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-06" title="View photo: Shepherd">
-                                <img src="images/portfolio/psc (6).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 6" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (6).jpg" data-dialog="modal-06"
+                                aria-haspopup="dialog" aria-label="View photo: Shepherd">
+                                <img src="images/portfolio/photo-6-480.webp"
+                                    srcset="images/portfolio/photo-6-480.webp 480w, images/portfolio/photo-6-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Shepherd</h5>
+                                        <h3 class="photo-title">Shepherd</h3>
                                         <p>2025-06-27</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -882,17 +890,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-07" title="View photo: Mountain">
-                                <img src="images/portfolio/psc (7).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 7" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (7).jpg" data-dialog="modal-07"
+                                aria-haspopup="dialog" aria-label="View photo: Mountain">
+                                <img src="images/portfolio/photo-7-480.webp"
+                                    srcset="images/portfolio/photo-7-480.webp 480w, images/portfolio/photo-7-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Mountain</h5>
+                                        <h3 class="photo-title">Mountain</h3>
                                         <p>2025-06-27</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -901,17 +911,19 @@
                     <div class="columns portfolio-item">
                         <div class="item-wrap">
 
-                            <a href="#modal-08" title="View photo: Loch Ness">
-                                <img src="images/portfolio/psc (8).jpg"
-                                    sizes="(max-width: 480px) 100vw, (max-width: 900px) 33vw, 25vw"
-                                    alt="Photography from Wenxing Duan portfolio set 8" loading="lazy" decoding="async">
+                            <a href="images/portfolio/modals/psc (8).jpg" data-dialog="modal-08"
+                                aria-haspopup="dialog" aria-label="View photo: Loch Ness">
+                                <img src="images/portfolio/photo-8-480.webp"
+                                    srcset="images/portfolio/photo-8-480.webp 480w, images/portfolio/photo-8-960.webp 960w"
+                                    sizes="(max-width: 767px) min(428px, calc(100vw - 92px)), (max-width: 900px) 30vw, 225px"
+                                    width="960" height="960" alt="" loading="lazy" decoding="async">
                                 <div class="overlay">
                                     <div class="portfolio-item-meta">
-                                        <h5>Loch Ness</h5>
+                                        <h3 class="photo-title">Loch Ness</h3>
                                         <p>2024-11-22</p>
                                     </div>
                                 </div>
-                                <div class="link-icon"><i class="icon-plus"></i></div>
+                                <div class="link-icon"><i class="icon-plus" aria-hidden="true"></i></div>
                             </a>
 
                         </div>
@@ -922,137 +934,137 @@
             </div>
 
 
-            <div id="modal-01" class="popup-modal mfp-hide">
+            <dialog id="modal-01" class="popup-modal" aria-labelledby="photo-title-1" closedby="any">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (1).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 1" loading="lazy" decoding="async" />
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-1.webp" width="1600" height="1107"
+                    alt="Sunset" loading="lazy" decoding="async" />
 
                 <div class="description-box">
-                    <h4>Sunset</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Edinburgh, United Kingdom</span>
+                    <h2 id="photo-title-1">Sunset</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Edinburgh, United Kingdom</span>
                 </div>
 
                 <div class="link-box">
-                    <a class="popup-modal-dismiss">Close</a>
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
                 </div>
 
-            </div>
+            </dialog>
 
-            <div id="modal-02" class="popup-modal mfp-hide">
+            <dialog id="modal-02" class="popup-modal" aria-labelledby="photo-title-2" closedby="any">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (2).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 2" loading="lazy" decoding="async" />
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-2.webp" width="1600" height="1200"
+                    alt="Aurora" loading="lazy" decoding="async" />
 
                 <div class="description-box">
-                    <h4>Aurora</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Edinburgh, United Kingdom</span>
-                </div>
-
-                <div class="link-box">
-
-                    <a class="popup-modal-dismiss">Close</a>
-                </div>
-
-            </div>
-
-            <div id="modal-03" class="popup-modal mfp-hide">
-
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (3).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 3" loading="lazy" decoding="async" />
-
-                <div class="description-box">
-                    <h4>Skyrunner</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Edinburgh, United Kingdom</span>
-                </div>
-
-                <div class="link-box">
-                    <a class="popup-modal-dismiss">Close</a>
-                </div>
-
-            </div>
-
-            <div id="modal-04" class="popup-modal mfp-hide">
-
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (4).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 4" loading="lazy" decoding="async" />
-
-                <div class="description-box">
-                    <h4>Pink Sky</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Edinburgh, United Kingdom</span>
-                </div>
-
-                <div class="link-box">
-                    <a class="popup-modal-dismiss">Close</a>
-                </div>
-
-            </div>
-
-            <div id="modal-05" class="popup-modal mfp-hide">
-
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (5).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 5" loading="lazy" decoding="async" />
-
-                <div class="description-box">
-                    <h4>A Bird</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>London, United Kingdom</span>
+                    <h2 id="photo-title-2">Aurora</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Edinburgh, United Kingdom</span>
                 </div>
 
                 <div class="link-box">
 
-                    <a class="popup-modal-dismiss">Close</a>
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
                 </div>
 
-            </div>
+            </dialog>
 
-            <div id="modal-06" class="popup-modal mfp-hide">
+            <dialog id="modal-03" class="popup-modal" aria-labelledby="photo-title-3" closedby="any">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (6).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 6" loading="lazy" decoding="async" />
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-3.webp" width="1600" height="1200"
+                    alt="Skyrunner" loading="lazy" decoding="async" />
 
                 <div class="description-box">
-                    <h4>Shepherd</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Dalian, China</span>
+                    <h2 id="photo-title-3">Skyrunner</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Edinburgh, United Kingdom</span>
+                </div>
+
+                <div class="link-box">
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
+                </div>
+
+            </dialog>
+
+            <dialog id="modal-04" class="popup-modal" aria-labelledby="photo-title-4" closedby="any">
+
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-4.webp" width="1195" height="1600"
+                    alt="Pink Sky" loading="lazy" decoding="async" />
+
+                <div class="description-box">
+                    <h2 id="photo-title-4">Pink Sky</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Edinburgh, United Kingdom</span>
+                </div>
+
+                <div class="link-box">
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
+                </div>
+
+            </dialog>
+
+            <dialog id="modal-05" class="popup-modal" aria-labelledby="photo-title-5" closedby="any">
+
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-5.webp" width="1240" height="1600"
+                    alt="A Bird" loading="lazy" decoding="async" />
+
+                <div class="description-box">
+                    <h2 id="photo-title-5">A Bird</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>London, United Kingdom</span>
                 </div>
 
                 <div class="link-box">
 
-                    <a class="popup-modal-dismiss">Close</a>
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
                 </div>
 
-            </div>
+            </dialog>
 
-            <div id="modal-07" class="popup-modal mfp-hide">
+            <dialog id="modal-06" class="popup-modal" aria-labelledby="photo-title-6" closedby="any">
 
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (7).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 7" loading="lazy" decoding="async" />
-                <div class="description-box">
-                    <h4>Mountain</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Dalian, China</span>
-                </div>
-
-
-                <div class="link-box">
-                    <a class="popup-modal-dismiss">Close</a>
-                </div>
-
-            </div>
-
-            <div id="modal-08" class="popup-modal mfp-hide">
-
-                <img class="scale-with-grid" src="images/portfolio/modals/psc (8).jpg" sizes="100vw"
-                    alt="Full-size view of portfolio image 8" loading="lazy" decoding="async" />
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-6.webp" width="1600" height="1205"
+                    alt="Shepherd" loading="lazy" decoding="async" />
 
                 <div class="description-box">
-                    <h4>Loch Ness</h4>
-                    <span class="categories"><i class="fa fa-tag"></i>Highlands, United Kingdom</span>
+                    <h2 id="photo-title-6">Shepherd</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Dalian, China</span>
                 </div>
 
                 <div class="link-box">
 
-                    <a class="popup-modal-dismiss">Close</a>
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
                 </div>
 
-            </div>
+            </dialog>
+
+            <dialog id="modal-07" class="popup-modal" aria-labelledby="photo-title-7" closedby="any">
+
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-7.webp" width="1600" height="957"
+                    alt="Mountain" loading="lazy" decoding="async" />
+                <div class="description-box">
+                    <h2 id="photo-title-7">Mountain</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Dalian, China</span>
+                </div>
+
+
+                <div class="link-box">
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
+                </div>
+
+            </dialog>
+
+            <dialog id="modal-08" class="popup-modal" aria-labelledby="photo-title-8" closedby="any">
+
+                <img class="scale-with-grid" src="images/portfolio/modals/photo-8.webp" width="1600" height="881"
+                    alt="Loch Ness" loading="lazy" decoding="async" />
+
+                <div class="description-box">
+                    <h2 id="photo-title-8">Loch Ness</h2>
+                    <span class="categories"><i class="fa fa-tag" aria-hidden="true"></i>Highlands, United Kingdom</span>
+                </div>
+
+                <div class="link-box">
+
+                    <form method="dialog"><button class="popup-modal-dismiss" autofocus>Close</button></form>
+                </div>
+
+            </dialog>
 
 
         </div>
@@ -1062,14 +1074,14 @@
 
     <!-- Testimonials Section
 ================================================== -->
-    <section id="testimonials">
+    <section id="testimonials" tabindex="-1">
         <div class="text-container">
 
             <div class="row">
 
                 <div class="two columns header-col">
 
-                    <h1><span>Quote</span></h1>
+                    <h2 aria-label="Quote"><span>Quote</span></h2>
 
                 </div>
                 <div class="ten columns flex-container">
@@ -1101,6 +1113,8 @@
 
     </section> <!-- Testimonials Section End-->
 
+    </main>
+
     <footer>
 
         <div class="row">
@@ -1111,7 +1125,7 @@
                     <li>
                         <a href="https://github.com/WenxingDuan" aria-label="GitHub" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-github"></i>
+                            <i class="fa-brands fa-github" aria-hidden="true"></i>
                         </a>
                     </li>
                     <li>
@@ -1123,14 +1137,14 @@
                     <li>
                         <a href="https://x.com/WenxingDuan" aria-label="X (Twitter)" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-x-twitter"></i>
+                            <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
                         </a>
                     </li>
 
                     <li>
                         <a href="https://www.linkedin.com/in/wenxingduan/" aria-label="LinkedIn" target="_blank"
                             rel="noopener noreferrer">
-                            <i class="fa-brands fa-linkedin-in"></i>
+                            <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
                         </a>
                     </li>
 
@@ -1139,25 +1153,22 @@
                     <li>
                         <a href="https://steamcommunity.com/profiles/76561198347586453/" aria-label="Steam"
                             target="_blank" rel="noopener noreferrer">
-                            <i class="fa-brands fa-steam"></i>
+                            <i class="fa-brands fa-steam" aria-hidden="true"></i>
                         </a>
                     </li>
                 </ul>
 
 
             </div>
+        </div>
 
     </footer> <!-- Footer End-->
 
     <!-- Java Script
     ================================================== -->
     <script src="js/jquery.min.js" defer></script>
-    <script src="js/jquery-migrate-1.2.1.min.js" defer></script>
-    <script src="js/jquery.flexslider.js" defer></script>
     <script src="js/waypoints.js" defer></script>
-    <script src="js/jquery.fittext.js" defer></script>
-    <script src="js/magnific-popup.js" defer></script>
-    <script src="js/init.js" defer></script>
+    <script src="js/init.js?v=20261113b" defer></script>
 
 </body>
 

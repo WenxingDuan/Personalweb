@@ -1,3 +1,5 @@
+document.documentElement.classList.add("js");
+
 /*-----------------------------------------------------------------------------------
 /*
 /* Init JS
@@ -6,21 +8,34 @@
 
  jQuery(document).ready(function($) {
 
-/*----------------------------------------------------*/
-/* FitText Settings
------------------------------------------------------- */
+   const nav = $('#nav-wrap');
+   const menuButton = document.querySelector('.mobile-btn');
+   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+   const syncMotion = () => { $.fx.off = reducedMotion.matches; };
+   syncMotion();
+   reducedMotion.addEventListener('change', syncMotion);
 
-    setTimeout(function() {
-	   $('h1.responsive-headline').fitText(1, { minFontSize: '38px', maxFontSize: '84px' });
-	 }, 100);
-
+   function setMenu(open) {
+      nav.toggleClass('menu-open', open);
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Hide navigation' : 'Show navigation');
+   }
+   menuButton.addEventListener('click', () => setMenu(menuButton.getAttribute('aria-expanded') !== 'true'));
+   $('#nav a').on('click', () => setMenu(false));
+   nav.on('keydown', event => {
+      if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+         setMenu(false);
+         menuButton.focus();
+      }
+   });
+   matchMedia('(min-width: 768px)').addEventListener('change', () => setMenu(false));
 
 /*----------------------------------------------------*/
 /* Highlight the current section in the navigation bar
 ------------------------------------------------------*/
 
-	var sections = $("section");
-	var navigation_links = $("#nav-wrap a");
+	var sections = $("header#home, main > section");
+	var navigation_links = $("#nav a");
 
 	sections.waypoint({
 
@@ -29,12 +44,14 @@
 		   var active_section;
 
 			active_section = $(this);
-			if (direction === "up") active_section = active_section.prev();
+			if (direction === "up") active_section = sections.eq(Math.max(0, sections.index(this) - 1));
 
 			var active_link = $('#nav-wrap a[href="#' + active_section.attr("id") + '"]');
 
          navigation_links.parent().removeClass("current");
+         navigation_links.removeAttr("aria-current");
 			active_link.parent().addClass("current");
+         active_link.attr("aria-current", "location");
 
 		},
 		offset: '35%'
@@ -52,106 +69,44 @@
 		var y = $(window).scrollTop();
       var nav = $('#nav-wrap');
 
-	   if ( (y > h*.20) && (y < h) && ($(window).outerWidth() > 768 ) ) {
-	      nav.fadeOut('fast');
+	   if ( (y > h*.20) && (y < h) && ($(window).outerWidth() > 768 ) && !nav.find(':focus').length ) {
+	      nav.stop(true, true).fadeOut('fast');
 	   }
       else {
          if (y < h*.20) {
-            nav.removeClass('opaque').fadeIn('fast');
+            nav.removeClass('opaque').stop(true, true).fadeIn('fast');
          }
          else {
-            nav.addClass('opaque').fadeIn('fast');
+            nav.addClass('opaque').stop(true, true).fadeIn('fast');
          }
       }
 
 	});
 
 
-/*----------------------------------------------------*/
-/*	Modal Popup
-------------------------------------------------------*/
-
-    $('.item-wrap a').magnificPopup({
-
-       type:'inline',
-       fixedContentPos: false,
-       removalDelay: 200,
-       showCloseBtn: false,
-       mainClass: 'mfp-fade'
-
-    });
-
-    $(document).on('click', '.popup-modal-dismiss', function (e) {
-    		e.preventDefault();
-    		$.magnificPopup.close();
-    });
-
-
-/*----------------------------------------------------*/
-/*	Flexslider
-/*----------------------------------------------------*/
-   $('.flexslider').flexslider({
-      namespace: "flex-",
-      controlsContainer: ".flex-container",
-      animation: 'slide',
-      controlNav: true,
-      directionNav: false,
-      smoothHeight: true,
-      slideshowSpeed: 7000,
-      animationSpeed: 600,
-      randomize: false,
-   });
-
-/*----------------------------------------------------*/
-/*	contact form
-------------------------------------------------------*/
-
-   $('form#contactForm button.submit').click(function() {
-
-      $('#image-loader').fadeIn();
-
-      var contactName = $('#contactForm #contactName').val();
-      var contactEmail = $('#contactForm #contactEmail').val();
-      var contactSubject = $('#contactForm #contactSubject').val();
-      var contactMessage = $('#contactForm #contactMessage').val();
-
-      var data = 'contactName=' + contactName + '&contactEmail=' + contactEmail +
-               '&contactSubject=' + contactSubject + '&contactMessage=' + contactMessage;
-
-      $.ajax({
-
-	      type: "POST",
-	      url: "inc/sendEmail.php",
-	      data: data,
-	      success: function(msg) {
-
-            // Message was sent
-            if (msg == 'OK') {
-               $('#image-loader').fadeOut();
-               $('#message-warning').hide();
-               $('#contactForm').fadeOut();
-               $('#message-success').fadeIn();   
-            }
-            // There was an error
-            else {
-               $('#image-loader').fadeOut();
-               $('#message-warning').html(msg);
-	            $('#message-warning').fadeIn();
-            }
-
-	      }
-
+   document.querySelectorAll('.item-wrap a[data-dialog]').forEach(link => {
+      const dialog = document.getElementById(link.dataset.dialog);
+      link.addEventListener('click', event => {
+         if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !dialog.showModal) return;
+         event.preventDefault();
+         dialog.showModal();
       });
-      return false;
    });
 
-
+   // Safari keeps click-outside dismissal until closedby is supported.
+   if (!('closedBy' in HTMLDialogElement.prototype)) {
+      const outside = (event, dialog) => {
+         const rect = dialog.getBoundingClientRect();
+         return event.clientX < rect.left || event.clientX > rect.right ||
+            event.clientY < rect.top || event.clientY > rect.bottom;
+      };
+      document.querySelectorAll('dialog[closedby="any"]').forEach(dialog => {
+         let pressedOutside = false;
+         dialog.addEventListener('pointerdown', event => { pressedOutside = outside(event, dialog); });
+         dialog.addEventListener('pointerup', event => {
+            if (pressedOutside && outside(event, dialog)) dialog.close();
+            pressedOutside = false;
+         });
+      });
+   }
 });
-
-
-
-
-
-
-
-
